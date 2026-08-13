@@ -1,69 +1,164 @@
+import Link from "next/link";
 import Image from "next/image";
+import { Search, Heart, Shield, MessageCircle, ArrowRight, PawPrint } from "lucide-react";
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative bg-balulu-primary-900 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1920&q=80')] bg-cover bg-center opacity-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-balulu-primary-900/80 to-balulu-primary-950" />
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-balulu-primary-800/50 rounded-full text-balulu-primary-200 text-sm font-medium mb-6 backdrop-blur-sm">
+              <PawPrint className="w-4 h-4" />
+              Cancún, Quintana Roo
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
+              Encuentra a tu{" "}
+              <span className="text-balulu-accent-400">compañero perfecto</span>
+            </h1>
+            <p className="text-lg md:text-xl text-balulu-primary-200 mb-8 leading-relaxed max-w-2xl">
+              BALULU conecta personas con mascotas que necesitan un hogar.
+              Descubre, conoce y da el primer paso hacia una conexión
+              inolvidable.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/explorar" className="btn-accent text-base justify-center">
+                Explorar mascotas
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Link>
+              <Link href="/sobre-balulu" className="btn-secondary text-base justify-center bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30">
+                Conocer más
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-balulu-text mb-4">
+              ¿Cómo funciona BALULU?
+            </h2>
+            <p className="text-balulu-muted text-lg max-w-2xl mx-auto">
+              Tres pasos simples para encontrar a tu nuevo mejor amigo
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Search,
+                title: "Descubre",
+                desc: "Explora mascotas disponibles cerca de ti. Filtra por especie, tamaño, edad y más.",
+                color: "bg-balulu-primary-100 text-balulu-primary-600",
+              },
+              {
+                icon: Heart,
+                title: "Conecta",
+                desc: "Conoce su personalidad, necesidades y historia. Guarda tus favoritas.",
+                color: "bg-balulu-accent-100 text-balulu-accent-600",
+              },
+              {
+                icon: MessageCircle,
+                title: "Adopta",
+                desc: "Inicia el proceso de adopción con mensajes guiados y contacto directo.",
+                color: "bg-balulu-secondary-100 text-balulu-secondary-600",
+              },
+            ].map((step, i) => (
+              <div key={i} className="text-center group">
+                <div className={`w-16 h-16 ${step.color} rounded-balulu mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  <step.icon className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold text-balulu-text mb-3">
+                  {step.title}
+                </h3>
+                <p className="text-balulu-muted leading-relaxed">
+                  {step.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust section */}
+      <section className="py-20 bg-balulu-primary-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-balulu-text mb-6">
+                Confianza en cada paso
+              </h2>
+              <div className="space-y-6">
+                {[
+                  {
+                    icon: Shield,
+                    title: "Perfiles verificados",
+                    desc: "Cada organización y rescatista pasa por un proceso de verificación.",
+                  },
+                  {
+                    icon: Heart,
+                    title: "Proceso transparente",
+                    desc: "Información clara sobre cada mascota, sin sorpresas ni engaños.",
+                  },
+                  {
+                    icon: MessageCircle,
+                    title: "Comunicación guiada",
+                    desc: "Mensajes predefinidos que facilitan el contacto de forma segura.",
+                  },
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="w-12 h-12 bg-balulu-primary-100 rounded-balulu-sm flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-6 h-6 text-balulu-primary-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-balulu-text mb-1">
+                        {item.title}
+                      </h4>
+                      <p className="text-balulu-muted text-sm leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative">
+              <div className="aspect-[4/3] bg-balulu-primary-200 rounded-balulu-lg overflow-hidden relative">
+                <Image
+                  src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80"
+                  alt="Persona abrazando a un perro"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-balulu-primary-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            ¿Listo para encontrar a tu compañero?
+          </h2>
+          <p className="text-balulu-primary-200 text-lg mb-8 max-w-2xl mx-auto">
+            Miles de mascotas están esperando un hogar. El tuyo podría ser el
+            siguiente.
           </p>
+          <Link href="/explorar" className="btn-accent text-lg px-8 py-4">
+            Empezar a explorar
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
     </div>
   );
 }
