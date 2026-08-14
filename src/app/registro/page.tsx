@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { PawPrint, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { useToast } from "@/components/Toast";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -13,23 +15,22 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
+  const { showToast } = useToast();
   const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
 
     if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden.");
+      showToast("Las contraseñas no coinciden", "error");
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+      showToast("La contraseña debe tener al menos 6 caracteres", "error");
       setLoading(false);
       return;
     }
@@ -45,18 +46,24 @@ export default function RegisterPage() {
     });
 
     if (signUpError) {
-      setError(signUpError.message);
+      showToast(signUpError.message, "error");
       setLoading(false);
       return;
     }
 
+    showToast("¡Cuenta creada exitosamente!", "success");
     router.refresh();
     router.push("/explorar");
   };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-balulu-background px-4 py-12">
-      <div className="w-full max-w-md">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-balulu-muted hover:text-balulu-text mb-8 transition-colors"
@@ -66,7 +73,12 @@ export default function RegisterPage() {
         </Link>
 
         <div className="bg-white rounded-balulu shadow-balulu p-8">
-          <div className="text-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-center mb-8"
+          >
             <div className="w-14 h-14 bg-balulu-accent-100 rounded-balulu mx-auto mb-4 flex items-center justify-center">
               <PawPrint className="w-7 h-7 text-balulu-accent-600" />
             </div>
@@ -74,18 +86,16 @@ export default function RegisterPage() {
               Crea tu cuenta
             </h1>
             <p className="text-balulu-muted mt-2">
-              Únete a la comunidad BALULU
+              Unete a la comunidad BALULU
             </p>
-          </div>
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-balulu-sm text-red-700 text-sm">
-              {error}
-            </div>
-          )}
+          </motion.div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               <label htmlFor="fullName" className="label">
                 Nombre completo
               </label>
@@ -98,11 +108,15 @@ export default function RegisterPage() {
                 className="input"
                 placeholder="Tu nombre"
               />
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
               <label htmlFor="email" className="label">
-                Correo electrónico
+                Correo electronico
               </label>
               <input
                 id="email"
@@ -113,9 +127,13 @@ export default function RegisterPage() {
                 className="input"
                 placeholder="tu@email.com"
               />
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
               <label htmlFor="password" className="label">
                 Contraseña
               </label>
@@ -127,7 +145,7 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="input pr-12"
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Minimo 6 caracteres"
                 />
                 <button
                   type="button"
@@ -141,9 +159,13 @@ export default function RegisterPage() {
                   )}
                 </button>
               </div>
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
               <label htmlFor="confirmPassword" className="label">
                 Confirmar contraseña
               </label>
@@ -156,28 +178,41 @@ export default function RegisterPage() {
                 className="input"
                 placeholder="Repite tu contraseña"
               />
-            </div>
+            </motion.div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-accent w-full disabled:opacity-60 disabled:cursor-not-allowed"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
             >
-              {loading ? "Creando cuenta..." : "Crear cuenta"}
-            </button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={loading}
+                className="btn-accent w-full disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? "Creando cuenta..." : "Crear cuenta"}
+              </motion.button>
+            </motion.div>
           </form>
 
-          <p className="mt-6 text-center text-sm text-balulu-muted">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="mt-6 text-center text-sm text-balulu-muted"
+          >
             ¿Ya tienes cuenta?{" "}
             <Link
               href="/login"
               className="text-balulu-primary-600 hover:text-balulu-primary-700 font-medium"
             >
-              Inicia sesión
+              Inicia sesion
             </Link>
-          </p>
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

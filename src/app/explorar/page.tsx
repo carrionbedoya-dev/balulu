@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, createPublicClient } from "@/lib/supabase/client";
 import {
   Search,
   Filter,
@@ -73,6 +73,7 @@ export default function ExplorePage() {
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const supabase = createClient();
+  const publicSupabase = createPublicClient();
 
   useEffect(() => {
     fetchPets();
@@ -81,90 +82,104 @@ export default function ExplorePage() {
 
   async function fetchPets() {
     setLoading(true);
-    let query = supabase
-      .from("pets")
-      .select(
-        "id, name, species, breed, age_months, size, sex, location, description, status, images, organization_id, organizations(name)"
-      )
-      .eq("status", "disponible")
-      .order("created_at", { ascending: false });
+    try {
+      let query = publicSupabase
+        .from("pets")
+        .select(
+          "id, name, species, breed, age_months, size, sex, location, description, status, images, organization_id, organizations(name)"
+        )
+        .eq("status", "disponible")
+        .order("created_at", { ascending: false });
 
-    if (selectedSpecies) query = query.eq("species", selectedSpecies);
-    if (selectedSize) query = query.eq("size", selectedSize);
+      if (selectedSpecies) query = query.eq("species", selectedSpecies);
+      if (selectedSize) query = query.eq("size", selectedSize);
 
-    const { data, error } = await query;
+      const { data, error } = await query;
 
-    if (error) {
-      console.error("Error fetching pets:", error);
+      if (error) {
+        console.error("Error fetching pets:", error);
+        setPets([]);
+      } else {
+        let filtered = data || [];
+        if (selectedAge) {
+          filtered = filtered.filter((pet) => {
+            const months = pet.age_months || 0;
+            if (selectedAge === "cachorro") return months <= 12;
+            if (selectedAge === "joven") return months > 12 && months <= 36;
+            if (selectedAge === "adulto") return months > 36 && months <= 96;
+            if (selectedAge === "senior") return months > 96;
+            return true;
+          });
+        }
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          filtered = filtered.filter(
+            (pet) =>
+              pet.name.toLowerCase().includes(q) ||
+              (pet.breed && pet.breed.toLowerCase().includes(q)) ||
+              (pet.location && pet.location.toLowerCase().includes(q))
+          );
+        }
+        setPets(filtered);
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
       setPets([]);
-    } else {
-      let filtered = data || [];
-      if (selectedAge) {
-        filtered = filtered.filter((pet) => {
-          const months = pet.age_months || 0;
-          if (selectedAge === "cachorro") return months <= 12;
-          if (selectedAge === "joven") return months > 12 && months <= 36;
-          if (selectedAge === "adulto") return months > 36 && months <= 96;
-          if (selectedAge === "senior") return months > 96;
-          return true;
-        });
-      }
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        filtered = filtered.filter(
-          (pet) =>
-            pet.name.toLowerCase().includes(q) ||
-            (pet.breed && pet.breed.toLowerCase().includes(q)) ||
-            (pet.location && pet.location.toLowerCase().includes(q))
-        );
-      }
-      setPets(filtered);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function fetchFavorites() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { data } = await supabase
-      .from("favorites")
-      .select("pet_id")
-      .eq("user_id", user.id);
+      const { data } = await supabase
+        .from("favorites")
+        .select("pet_id")
+        .eq("user_id", user.id);
 
-    if (data) {
-      setFavorites(new Set(data.map((f) => f.pet_id)));
+      if (data) {
+        setFavorites(new Set(data.map((f) => f.pet_id)));
+      }
+    } catch (err) {
+      console.error("Error fetching favorites:", err);
     }
   }
 
   async function toggleFavorite(petId: string) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      window.location.href = "/login";
-      return;
-    }
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
 
-    if (favorites.has(petId)) {
-      await supabase
-        .from("favorites")
-        .delete()
-        .eq("user_id", user.id)
-        .eq("pet_id", petId);
-      setFavorites((prev) => {
-        const next = new Set(prev);
-        next.delete(petId);
-        return next;
-      });
-    } else {
-      await supabase.from("favorites").insert({
-        user_id: user.id,
-        pet_id: petId,
-      });
-      setFavorites((prev) => new Set(prev).add(petId));
+      if (favorites.has(petId)) {
+        await supabase
+          .from("favorites")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("pet_id", petId);
+        setFavorites((prev) => {
+          const next = new Set(prev);
+          next.delete(petId);
+          return next;
+        });
+      } else {
+        await supabase.from("favorites").insert({
+          user_id: user.id,
+          pet_id: petId,
+        });
+        setFavorites((prev) => new Set(prev).add(petId));
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
     }
   }
 

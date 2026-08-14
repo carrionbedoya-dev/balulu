@@ -51,6 +51,9 @@
 
   --shadow-balulu: 0 4px 24px -4px rgba(0, 0, 0, 0.08);
   --shadow-balulu-lg: 0 12px 48px -8px rgba(0, 0, 0, 0.12);
+  --shadow-balulu-xl: 0 24px 64px -12px rgba(0, 0, 0, 0.16);
+  --shadow-balulu-glow: 0 0 40px -8px rgba(37, 99, 235, 0.3);
+  --shadow-balulu-accent-glow: 0 0 40px -8px rgba(249, 115, 22, 0.3);
 }
 
 @layer base {
@@ -61,30 +64,145 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-balulu-primary-600 text-white font-semibold rounded-balulu-sm hover:bg-balulu-primary-700 transition-colors duration-200;
-    box-shadow: var(--shadow-balulu);
+    @apply inline-flex items-center justify-center px-6 py-3 bg-balulu-primary-600 text-white font-semibold rounded-balulu-sm hover:bg-balulu-primary-700 transition-all duration-200;
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
+  }
+  
+  .btn-primary:hover {
+    box-shadow: 0 6px 20px 0 rgba(37, 99, 235, 0.5), var(--shadow-balulu-glow);
+    transform: translateY(-2px);
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center px-6 py-3 bg-white text-balulu-primary-700 font-semibold rounded-balulu-sm border-2 border-balulu-primary-200 hover:border-balulu-primary-400 hover:bg-balulu-primary-50 transition-all duration-200;
   }
-
-  .btn-accent {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-balulu-accent-500 text-white font-semibold rounded-balulu-sm hover:bg-balulu-accent-600 transition-colors duration-200;
+  
+  .btn-secondary:hover {
+    transform: translateY(-2px);
     box-shadow: var(--shadow-balulu);
   }
 
+  .btn-accent {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-balulu-accent-500 text-white font-semibold rounded-balulu-sm hover:bg-balulu-accent-600 transition-all duration-200;
+    box-shadow: 0 4px 14px 0 rgba(249, 115, 22, 0.39);
+  }
+  
+  .btn-accent:hover {
+    box-shadow: 0 6px 20px 0 rgba(249, 115, 22, 0.5), var(--shadow-balulu-accent-glow);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-4 py-2 text-balulu-muted font-medium rounded-balulu-sm hover:text-balulu-text hover:bg-balulu-background transition-all duration-200;
+  }
+
   .card {
-    @apply bg-white rounded-balulu overflow-hidden hover:shadow-balulu-lg transition-shadow duration-300;
+    @apply bg-white rounded-balulu overflow-hidden transition-all duration-300;
     border: 1px solid var(--color-balulu-border);
+    box-shadow: var(--shadow-balulu);
+  }
+  
+  .card:hover {
+    box-shadow: var(--shadow-balulu-lg);
+    transform: translateY(-4px);
+    border-color: var(--color-balulu-primary-200);
+  }
+
+  .card-premium {
+    @apply bg-white rounded-balulu-lg overflow-hidden transition-all duration-500;
+    border: 1px solid var(--color-balulu-border);
+    box-shadow: var(--shadow-balulu);
+    position: relative;
+  }
+  
+  .card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-balulu-primary-500), var(--color-balulu-accent-500), var(--color-balulu-secondary-500));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .card-premium:hover {
+    box-shadow: var(--shadow-balulu-xl);
+    transform: translateY(-6px) scale(1.01);
+  }
+  
+  .card-premium:hover::before {
+    opacity: 1;
   }
 
   .input {
-    @apply w-full px-4 py-3 bg-white rounded-balulu-sm text-balulu-text placeholder:text-balulu-muted focus:outline-none focus:ring-2 focus:ring-balulu-primary-400 focus:border-transparent transition-all duration-200;
-    border: 1px solid var(--color-balulu-border);
+    @apply w-full px-4 py-3 bg-white rounded-balulu-sm text-balulu-text placeholder:text-balulu-muted focus:outline-none transition-all duration-200;
+    border: 2px solid var(--color-balulu-border);
+  }
+  
+  .input:focus {
+    border-color: var(--color-balulu-primary-400);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
   }
 
   .label {
-    @apply block text-sm font-medium text-balulu-text mb-1.5;
+    @apply block text-sm font-semibold text-balulu-text mb-2;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--color-balulu-primary-600), var(--color-balulu-accent-500));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.2); }
+    50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.4); }
   }
 }

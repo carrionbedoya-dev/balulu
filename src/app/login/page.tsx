@@ -3,22 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { PawPrint, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { useToast } from "@/components/Toast";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
+  const { showToast } = useToast();
   const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -26,18 +27,24 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setError("Correo o contraseña incorrectos. Intenta de nuevo.");
+      showToast("Correo o contraseña incorrectos", "error");
       setLoading(false);
       return;
     }
 
+    showToast("¡Bienvenido de vuelta!", "success");
     router.refresh();
     router.push("/explorar");
   };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-balulu-background px-4 py-12">
-      <div className="w-full max-w-md">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-balulu-muted hover:text-balulu-text mb-8 transition-colors"
@@ -47,7 +54,12 @@ export default function LoginPage() {
         </Link>
 
         <div className="bg-white rounded-balulu shadow-balulu p-8">
-          <div className="text-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-center mb-8"
+          >
             <div className="w-14 h-14 bg-balulu-primary-100 rounded-balulu mx-auto mb-4 flex items-center justify-center">
               <PawPrint className="w-7 h-7 text-balulu-primary-600" />
             </div>
@@ -55,20 +67,18 @@ export default function LoginPage() {
               Bienvenido de vuelta
             </h1>
             <p className="text-balulu-muted mt-2">
-              Inicia sesión para continuar
+              Inicia sesion para continuar
             </p>
-          </div>
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-balulu-sm text-red-700 text-sm">
-              {error}
-            </div>
-          )}
+          </motion.div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               <label htmlFor="email" className="label">
-                Correo electrónico
+                Correo electronico
               </label>
               <input
                 id="email"
@@ -79,9 +89,13 @@ export default function LoginPage() {
                 className="input"
                 placeholder="tu@email.com"
               />
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
               <label htmlFor="password" className="label">
                 Contraseña
               </label>
@@ -107,28 +121,41 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
-            </div>
+            </motion.div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
             >
-              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
-            </button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={loading}
+                className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? "Iniciando sesion..." : "Iniciar sesion"}
+              </motion.button>
+            </motion.div>
           </form>
 
-          <p className="mt-6 text-center text-sm text-balulu-muted">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-6 text-center text-sm text-balulu-muted"
+          >
             ¿No tienes cuenta?{" "}
             <Link
               href="/registro"
               className="text-balulu-primary-600 hover:text-balulu-primary-700 font-medium"
             >
-              Regístrate aquí
+              Registrate aqui
             </Link>
-          </p>
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,168 +1,229 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useState } from "react";
-import { PawPrint, Menu, X, Heart, User } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import {
+  PawPrint,
+  Menu,
+  X,
+  User,
+  LogOut,
+  Heart,
+  Search,
+  Building2,
+} from "lucide-react";
 
-interface NavbarProps {
-  user?: { email?: string | null } | null;
-}
-
-export default function Navbar({ user }: NavbarProps) {
+export default function Navbar() {
+  const [user, setUser] = useState<{ email: string | undefined } | null>(null);
+  const [loading, setLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user ? { email: user.email } : null);
+      setLoading(false);
+    };
+    getUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ? { email: session.user.email } : null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.refresh();
     router.push("/");
+    router.refresh();
   };
 
+  const navLinks = [
+    { href: "/explorar", label: "Explorar", icon: Search },
+    { href: "/favoritos", label: "Favoritos", icon: Heart },
+  ];
+
+  const isActive = (href: string) => pathname === href;
+
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-balulu-border">
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-balulu-border"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-balulu-primary-600 rounded-balulu-sm flex items-center justify-center group-hover:bg-balulu-primary-700 transition-colors">
-              <PawPrint className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-balulu-primary-800 tracking-tight">
+            <motion.div
+              whileHover={{ rotate: [0, -10, 10, 0] }}
+              transition={{ duration: 0.5 }}
+            >
+              <PawPrint className="w-7 h-7 text-balulu-primary-600" />
+            </motion.div>
+            <span className="text-xl font-bold text-balulu-text">
               BALULU
             </span>
           </Link>
 
-          {/* Desktop nav */}
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
-            <Link
-              href="/explorar"
-              className="px-4 py-2 text-sm font-medium text-balulu-text hover:text-balulu-primary-700 hover:bg-balulu-primary-50 rounded-balulu-sm transition-all"
-            >
-              Explorar
-            </Link>
-            {user && (
+            {navLinks.map((link) => (
               <Link
-                href="/favoritos"
-                className="px-4 py-2 text-sm font-medium text-balulu-text hover:text-balulu-primary-700 hover:bg-balulu-primary-50 rounded-balulu-sm transition-all flex items-center gap-1.5"
+                key={link.href}
+                href={link.href}
+                className={`nav-link ${isActive(link.href) ? "nav-link-active" : ""}`}
               >
-                <Heart className="w-4 h-4" />
-                Favoritos
+                <link.icon className="w-4 h-4" />
+                {link.label}
               </Link>
-            )}
+            ))}
           </div>
 
-          {/* Auth buttons */}
+          {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {user ? (
+            {!loading && (
               <>
-                <Link
-                  href="/perfil"
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-balulu-text hover:text-balulu-primary-700 hover:bg-balulu-primary-50 rounded-balulu-sm transition-all"
-                >
-                  <User className="w-4 h-4" />
-                  Mi cuenta
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 text-sm font-medium text-balulu-muted hover:text-balulu-text transition-colors"
-                >
-                  Cerrar sesión
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="px-4 py-2 text-sm font-medium text-balulu-text hover:text-balulu-primary-700 transition-colors"
-                >
-                  Iniciar sesión
-                </Link>
-                <Link
-                  href="/registro"
-                  className="btn-primary text-sm"
-                >
-                  Registrarse
-                </Link>
+                {user ? (
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href="/organizacion"
+                      className="nav-link"
+                    >
+                      <Building2 className="w-4 h-4" />
+                      Mi organizacion
+                    </Link>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-balulu-muted hover:text-red-600 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Cerrar sesion
+                    </motion.button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href="/login"
+                      className="text-sm font-medium text-balulu-text hover:text-balulu-primary-600 transition-colors"
+                    >
+                      Iniciar sesion
+                    </Link>
+                    <Link
+                      href="/registro"
+                      className="btn-primary text-sm"
+                    >
+                      Registrarse
+                    </Link>
+                  </div>
+                )}
               </>
             )}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden p-2 rounded-balulu-sm hover:bg-balulu-primary-50 transition-colors"
           >
             {mobileOpen ? (
-              <X className="w-6 h-6 text-balulu-text" />
+              <X className="w-5 h-5" />
             ) : (
-              <Menu className="w-6 h-6 text-balulu-text" />
+              <Menu className="w-5 h-5" />
             )}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-balulu-border px-4 py-4 space-y-2">
-          <Link
-            href="/explorar"
-            onClick={() => setMobileOpen(false)}
-            className="block px-4 py-3 text-sm font-medium text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white border-t border-balulu-border overflow-hidden"
           >
-            Explorar mascotas
-          </Link>
-          {user && (
-            <Link
-              href="/favoritos"
-              onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-sm font-medium text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm flex items-center gap-2"
-            >
-              <Heart className="w-4 h-4" />
-              Favoritos
-            </Link>
-          )}
-          {user ? (
-            <>
-              <Link
-                href="/perfil"
-                onClick={() => setMobileOpen(false)}
-                className="block px-4 py-3 text-sm font-medium text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
-              >
-                Mi cuenta
-              </Link>
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setMobileOpen(false);
-                }}
-                className="block w-full text-left px-4 py-3 text-sm font-medium text-balulu-muted hover:bg-balulu-primary-50 rounded-balulu-sm"
-              >
-                Cerrar sesión
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                className="block px-4 py-3 text-sm font-medium text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
-              >
-                Iniciar sesión
-              </Link>
-              <Link
-                href="/registro"
-                onClick={() => setMobileOpen(false)}
-                className="block px-4 py-3 text-sm font-medium text-balulu-primary-700 bg-balulu-primary-50 rounded-balulu-sm"
-              >
-                Registrarse
-              </Link>
-            </>
-          )}
-        </div>
-      )}
-    </nav>
+            <div className="px-4 py-4 space-y-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-balulu-sm ${
+                    isActive(link.href)
+                      ? "bg-balulu-primary-50 text-balulu-primary-700"
+                      : "text-balulu-text hover:bg-balulu-primary-50"
+                  }`}
+                >
+                  <link.icon className="w-4 h-4" />
+                  {link.label}
+                </Link>
+              ))}
+              <div className="border-t border-balulu-border pt-2 mt-2">
+                {!loading && (
+                  <>
+                    {user ? (
+                      <>
+                        <Link
+                          href="/organizacion"
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center gap-2 px-3 py-2 text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
+                        >
+                          <Building2 className="w-4 h-4" />
+                          Mi organizacion
+                        </Link>
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setMobileOpen(false);
+                          }}
+                          className="flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-balulu-sm w-full"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Cerrar sesion
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          href="/login"
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center gap-2 px-3 py-2 text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
+                        >
+                          <User className="w-4 h-4" />
+                          Iniciar sesion
+                        </Link>
+                        <Link
+                          href="/registro"
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center gap-2 px-3 py-2 text-balulu-primary-600 font-medium hover:bg-balulu-primary-50 rounded-balulu-sm"
+                        >
+                          Registrarse
+                        </Link>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 }
