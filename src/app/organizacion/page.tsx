@@ -23,16 +23,16 @@ interface Pet {
   id: string;
   name: string;
   species: string;
-  status: string;
+  status: string | null;
   images: string[] | null;
-  created_at: string;
+  created_at: string | null;
 }
 
 interface Interest {
   id: string;
   pet_id: string;
-  status: string;
-  created_at: string;
+  status: string | null;
+  created_at: string | null;
   pets: { name: string } | null;
 }
 
@@ -319,7 +319,7 @@ export default function OrganizationDashboardPage() {
                     </p>
                   </div>
                   <span className="text-xs text-balulu-muted">
-                    {new Date(interest.created_at).toLocaleDateString("es-MX")}
+                    {interest.created_at ? new Date(interest.created_at).toLocaleDateString("es-MX") : "Fecha desconocida"}
                   </span>
                 </motion.div>
               ))}

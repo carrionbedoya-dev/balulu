@@ -1,13 +1,14 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database.types";
 
-let clientInstance: ReturnType<typeof createSupabaseClient> | null = null;
-let publicClientInstance: ReturnType<typeof createSupabaseClient> | null = null;
+let clientInstance: ReturnType<typeof createSupabaseClient<Database>> | null = null;
+let publicClientInstance: ReturnType<typeof createSupabaseClient<Database>> | null = null;
 
 // Cliente con autenticación (para favoritos, login, perfil)
 export function createClient() {
   if (clientInstance) return clientInstance;
-  
-  clientInstance = createSupabaseClient(
+
+  clientInstance = createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -20,18 +21,18 @@ export function createClient() {
       },
     }
   );
-  
+
   return clientInstance;
 }
 
 // Cliente público SIN autenticación (para leer mascotas, organizaciones)
 export function createPublicClient() {
   if (publicClientInstance) return publicClientInstance;
-  
-  publicClientInstance = createSupabaseClient(
+
+  publicClientInstance = createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
-  
+
   return publicClientInstance;
 }

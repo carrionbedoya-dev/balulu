@@ -81,7 +81,7 @@ export default function EditPetPage() {
       sex: data.sex || "macho",
       location: data.location || "",
       description: data.description || "",
-      status: data.status,
+      status: data.status || "disponible",
     });
     setLoading(false);
   }

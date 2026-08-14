@@ -26,7 +26,7 @@ interface Pet {
   sex: string | null;
   location: string | null;
   description: string | null;
-  status: string;
+  status: string | null;
   images: string[] | null;
   organization_id: string | null;
   organizations: { name: string } | null;

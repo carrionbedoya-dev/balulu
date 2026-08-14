@@ -22,7 +22,7 @@ interface FavoritePet {
     sex: string | null;
     location: string | null;
     images: string[] | null;
-    status: string;
+    status: string | null;
   };
 }
 
