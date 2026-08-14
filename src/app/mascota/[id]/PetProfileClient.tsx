@@ -238,6 +238,12 @@ export default function PetProfileClient({
                       : "bg-balulu-accent-50 text-balulu-accent-700"
                   }`}
                 >
+                  {pet.status === "disponible" && (
+                    <span className="relative flex w-2 h-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-balulu-secondary-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full w-2 h-2 bg-balulu-secondary-500"></span>
+                    </span>
+                  )}
                   {pet.status === "disponible"
                     ? "Disponible para adopcion"
                     : "En proceso de adopcion"}
@@ -392,7 +398,7 @@ export default function PetProfileClient({
                   }
                   setShowQuickChat(true);
                 }}
-                className="btn-primary w-full text-base py-4"
+                className="btn-primary w-full text-base py-4 pulse-glow"
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Estoy interesado en adoptar

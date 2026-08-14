@@ -351,6 +351,11 @@ export default function ExplorePage() {
                           <Dog className="w-16 h-16 text-balulu-primary-300" />
                         </div>
                       )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4 pointer-events-none">
+                        <span className="text-white text-sm font-semibold px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                          Ver perfil completo
+                        </span>
+                      </div>
                       <div className="absolute top-3 right-3">
                         <button
                           onClick={(e) => {

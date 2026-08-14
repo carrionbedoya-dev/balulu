@@ -60,6 +60,22 @@
   html {
     scroll-behavior: smooth;
   }
+
+  body {
+    font-size: 17px;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl font-bold;
+  }
 }
 
 @layer components {
@@ -148,6 +164,52 @@
 
   .label {
     @apply block text-sm font-semibold text-balulu-text mb-2;
+  }
+
+  .nav-link {
+    @apply relative flex items-center gap-2 px-4 py-2.5 text-[15px] font-semibold text-balulu-muted rounded-balulu-sm transition-all duration-200;
+  }
+
+  .nav-link:hover {
+    @apply text-balulu-primary-700 bg-balulu-primary-50;
+    transform: translateY(-1px);
+  }
+
+  .nav-link-active {
+    @apply text-balulu-primary-700 bg-balulu-primary-50;
+  }
+
+  .nav-link-active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 12px;
+    right: 12px;
+    height: 2.5px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--color-balulu-primary-500), var(--color-balulu-accent-500));
+  }
+
+  .oauth-btn {
+    @apply w-full inline-flex items-center justify-center gap-3 px-6 py-3 bg-white text-balulu-text font-semibold rounded-balulu-sm border-2 border-balulu-border transition-all duration-200;
+  }
+
+  .oauth-btn:hover {
+    @apply border-balulu-primary-300 bg-balulu-primary-50;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-balulu);
+  }
+
+  .divider-text {
+    @apply relative flex items-center gap-4 text-xs font-semibold uppercase tracking-wider text-balulu-muted my-6;
+  }
+
+  .divider-text::before,
+  .divider-text::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-balulu-border);
   }
 
   .badge {

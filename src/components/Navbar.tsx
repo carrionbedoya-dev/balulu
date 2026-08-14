@@ -14,6 +14,7 @@ import {
   Heart,
   Search,
   Building2,
+  HeartHandshake,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -52,6 +53,7 @@ export default function Navbar() {
   const navLinks = [
     { href: "/explorar", label: "Explorar", icon: Search },
     { href: "/favoritos", label: "Favoritos", icon: Heart },
+    { href: "/donaciones", label: "Donar", icon: HeartHandshake },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -66,14 +68,15 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <motion.div
-              whileHover={{ rotate: [0, -10, 10, 0] }}
+              whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
               transition={{ duration: 0.5 }}
+              className="w-10 h-10 bg-gradient-to-br from-balulu-primary-500 to-balulu-primary-700 rounded-balulu-sm flex items-center justify-center shadow-balulu"
             >
-              <PawPrint className="w-7 h-7 text-balulu-primary-600" />
+              <PawPrint className="w-5.5 h-5.5 text-white" strokeWidth={2.5} />
             </motion.div>
-            <span className="text-xl font-bold text-balulu-text">
+            <span className="text-2xl font-extrabold tracking-tight gradient-text">
               BALULU
             </span>
           </Link>

@@ -64,6 +64,14 @@ export default function Footer() {
                   Sobre BALULU
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/contacto"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
+                  Contacto
+                </Link>
+              </li>
             </ul>
           </div>
 
