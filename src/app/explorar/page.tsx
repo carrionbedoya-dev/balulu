@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { createClient, createPublicClient } from "@/lib/supabase/client";
 import {
   Search,
@@ -205,36 +206,45 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      <div className="bg-white border-b border-balulu-border sticky top-16 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="bg-white/90 backdrop-blur-md border-b border-balulu-border sticky top-20 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-balulu-muted" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-balulu-muted" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && fetchPets()}
                 placeholder="Buscar por nombre, raza o ubicación..."
-                className="input pl-10"
+                className="input pl-11 py-3.5 text-[15px] font-medium"
               />
             </div>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setShowFilters(!showFilters)}
-              className="btn-secondary text-sm flex items-center gap-2"
+              className={`btn-secondary text-sm flex items-center gap-2 ${
+                showFilters ? "border-balulu-primary-400 bg-balulu-primary-50" : ""
+              }`}
             >
               <Filter className="w-4 h-4" />
               Filtros
               {(selectedSpecies || selectedSize || selectedAge) && (
-                <span className="w-5 h-5 bg-balulu-accent-500 text-white text-xs rounded-full flex items-center justify-center">
+                <span className="w-5 h-5 bg-balulu-accent-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                   {[selectedSpecies, selectedSize, selectedAge].filter(Boolean)
                     .length}
                 </span>
               )}
-            </button>
-            <button onClick={fetchPets} className="btn-primary text-sm">
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={fetchPets}
+              className="btn-primary text-sm"
+            >
               Buscar
-            </button>
+            </motion.button>
           </div>
 
           {showFilters && (

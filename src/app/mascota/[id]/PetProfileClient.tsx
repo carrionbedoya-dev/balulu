@@ -154,6 +154,7 @@ export default function PetProfileClient({
                       src={images[currentImage]}
                       alt={pet.name}
                       fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover"
                       priority
                     />
@@ -198,6 +199,7 @@ export default function PetProfileClient({
                         src={img}
                         alt={`${pet.name} ${i + 1}`}
                         fill
+                        sizes="80px"
                         className="object-cover"
                       />
                     ) : (
