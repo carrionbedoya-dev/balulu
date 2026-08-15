@@ -62,25 +62,29 @@
   }
 
   body {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight;
+    @apply text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl font-bold tracking-tight;
+    @apply text-3xl md:text-5xl font-bold tracking-tight;
   }
 
   h3 {
-    @apply text-xl md:text-2xl font-bold;
+    @apply text-2xl md:text-3xl font-bold;
+  }
+
+  p {
+    @apply leading-relaxed;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-balulu-primary-600 text-white font-semibold rounded-balulu-sm hover:bg-balulu-primary-700 transition-all duration-200;
+    @apply inline-flex items-center justify-center px-7 py-3.5 bg-balulu-primary-600 text-white font-bold text-[15px] rounded-balulu-sm hover:bg-balulu-primary-700 transition-all duration-200;
     box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
   }
   
@@ -90,7 +94,7 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-white text-balulu-primary-700 font-semibold rounded-balulu-sm border-2 border-balulu-primary-200 hover:border-balulu-primary-400 hover:bg-balulu-primary-50 transition-all duration-200;
+    @apply inline-flex items-center justify-center px-7 py-3.5 bg-white text-balulu-primary-700 font-bold text-[15px] rounded-balulu-sm border-2 border-balulu-primary-200 hover:border-balulu-primary-400 hover:bg-balulu-primary-50 transition-all duration-200;
   }
   
   .btn-secondary:hover {
@@ -99,7 +103,7 @@
   }
 
   .btn-accent {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-balulu-accent-500 text-white font-semibold rounded-balulu-sm hover:bg-balulu-accent-600 transition-all duration-200;
+    @apply inline-flex items-center justify-center px-7 py-3.5 bg-balulu-accent-500 text-white font-bold text-[15px] rounded-balulu-sm hover:bg-balulu-accent-600 transition-all duration-200;
     box-shadow: 0 4px 14px 0 rgba(249, 115, 22, 0.39);
   }
   

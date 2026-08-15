@@ -21,6 +21,7 @@ export default function Navbar() {
   const [user, setUser] = useState<{ email: string | undefined } | null>(null);
   const [loading, setLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
@@ -41,7 +42,13 @@ export default function Navbar() {
       setUser(session?.user ? { email: session.user.email } : null);
     });
 
-    return () => subscription.unsubscribe();
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -53,7 +60,6 @@ export default function Navbar() {
   const navLinks = [
     { href: "/explorar", label: "Explorar", icon: Search },
     { href: "/favoritos", label: "Favoritos", icon: Heart },
-    { href: "/donaciones", label: "Donar", icon: HeartHandshake },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -63,20 +69,22 @@ export default function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-balulu-border"
+      className={`sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b transition-shadow duration-300 ${
+        scrolled ? "border-balulu-border shadow-balulu" : "border-transparent"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
+          <Link href="/" className="flex items-center gap-3 group">
             <motion.div
               whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
               transition={{ duration: 0.5 }}
-              className="w-10 h-10 bg-gradient-to-br from-balulu-primary-500 to-balulu-primary-700 rounded-balulu-sm flex items-center justify-center shadow-balulu"
+              className="w-11 h-11 bg-gradient-to-br from-balulu-primary-500 to-balulu-primary-700 rounded-balulu-sm flex items-center justify-center shadow-balulu"
             >
-              <PawPrint className="w-5.5 h-5.5 text-white" strokeWidth={2.5} />
+              <PawPrint className="w-6 h-6 text-white" strokeWidth={2.5} />
             </motion.div>
-            <span className="text-2xl font-extrabold tracking-tight gradient-text">
+            <span className="text-[26px] font-extrabold tracking-tight gradient-text">
               BALULU
             </span>
           </Link>
@@ -89,47 +97,46 @@ export default function Navbar() {
                 href={link.href}
                 className={`nav-link ${isActive(link.href) ? "nav-link-active" : ""}`}
               >
-                <link.icon className="w-4 h-4" />
+                <link.icon className="w-4.5 h-4.5" />
                 {link.label}
               </Link>
             ))}
+            {!loading && user && (
+              <Link href="/organizacion" className="nav-link">
+                <Building2 className="w-4.5 h-4.5" />
+                Mi organizacion
+              </Link>
+            )}
           </div>
 
-          {/* Auth Buttons */}
+          {/* Right side: Donar + Auth */}
           <div className="hidden md:flex items-center gap-3">
+            <Link href="/donaciones" className="btn-accent text-sm py-2.5 px-5">
+              <HeartHandshake className="w-4 h-4 mr-1.5" />
+              Donar
+            </Link>
+
             {!loading && (
               <>
                 {user ? (
-                  <div className="flex items-center gap-3">
-                    <Link
-                      href="/organizacion"
-                      className="nav-link"
-                    >
-                      <Building2 className="w-4 h-4" />
-                      Mi organizacion
-                    </Link>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-balulu-muted hover:text-red-600 transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Cerrar sesion
-                    </motion.button>
-                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-balulu-muted hover:text-red-600 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Salir
+                  </motion.button>
                 ) : (
                   <div className="flex items-center gap-3">
                     <Link
                       href="/login"
-                      className="text-sm font-medium text-balulu-text hover:text-balulu-primary-600 transition-colors"
+                      className="text-[15px] font-semibold text-balulu-text hover:text-balulu-primary-600 transition-colors"
                     >
                       Iniciar sesion
                     </Link>
-                    <Link
-                      href="/registro"
-                      className="btn-primary text-sm"
-                    >
+                    <Link href="/registro" className="btn-primary text-sm py-2.5 px-5">
                       Registrarse
                     </Link>
                   </div>
@@ -144,9 +151,9 @@ export default function Navbar() {
             className="md:hidden p-2 rounded-balulu-sm hover:bg-balulu-primary-50 transition-colors"
           >
             {mobileOpen ? (
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Menu className="w-6 h-6" />
             )}
           </button>
         </div>
@@ -167,16 +174,24 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-balulu-sm ${
+                  className={`flex items-center gap-2 px-3 py-3 text-base font-semibold rounded-balulu-sm ${
                     isActive(link.href)
                       ? "bg-balulu-primary-50 text-balulu-primary-700"
                       : "text-balulu-text hover:bg-balulu-primary-50"
                   }`}
                 >
-                  <link.icon className="w-4 h-4" />
+                  <link.icon className="w-5 h-5" />
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/donaciones"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 px-3 py-3 text-base font-semibold rounded-balulu-sm text-balulu-accent-700 bg-balulu-accent-50"
+              >
+                <HeartHandshake className="w-5 h-5" />
+                Donar
+              </Link>
               <div className="border-t border-balulu-border pt-2 mt-2">
                 {!loading && (
                   <>
@@ -185,9 +200,9 @@ export default function Navbar() {
                         <Link
                           href="/organizacion"
                           onClick={() => setMobileOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
+                          className="flex items-center gap-2 px-3 py-3 text-base font-semibold text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
                         >
-                          <Building2 className="w-4 h-4" />
+                          <Building2 className="w-5 h-5" />
                           Mi organizacion
                         </Link>
                         <button
@@ -195,9 +210,9 @@ export default function Navbar() {
                             handleLogout();
                             setMobileOpen(false);
                           }}
-                          className="flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-balulu-sm w-full"
+                          className="flex items-center gap-2 px-3 py-3 text-base font-semibold text-red-600 hover:bg-red-50 rounded-balulu-sm w-full"
                         >
-                          <LogOut className="w-4 h-4" />
+                          <LogOut className="w-5 h-5" />
                           Cerrar sesion
                         </button>
                       </>
@@ -206,15 +221,15 @@ export default function Navbar() {
                         <Link
                           href="/login"
                           onClick={() => setMobileOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
+                          className="flex items-center gap-2 px-3 py-3 text-base font-semibold text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
                         >
-                          <User className="w-4 h-4" />
+                          <User className="w-5 h-5" />
                           Iniciar sesion
                         </Link>
                         <Link
                           href="/registro"
                           onClick={() => setMobileOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-balulu-primary-600 font-medium hover:bg-balulu-primary-50 rounded-balulu-sm"
+                          className="flex items-center gap-2 px-3 py-3 text-base font-bold text-balulu-primary-600 hover:bg-balulu-primary-50 rounded-balulu-sm"
                         >
                           Registrarse
                         </Link>

@@ -376,9 +376,9 @@ export default function ExplorePage() {
                       </div>
                     </div>
                   </Link>
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-balulu-primary-50 text-balulu-primary-700 text-xs font-medium rounded-full">
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-balulu-primary-50 text-balulu-primary-700 text-xs font-bold rounded-full">
                         {speciesIcons[pet.species?.toLowerCase()] || (
                           <Dog className="w-3 h-3" />
                         )}
@@ -387,7 +387,7 @@ export default function ExplorePage() {
                             pet.species.slice(1)
                           : "Mascota"}
                       </span>
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-balulu-secondary-50 text-balulu-secondary-700 text-xs font-medium rounded-full">
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-balulu-secondary-50 text-balulu-secondary-700 text-xs font-bold rounded-full">
                         {pet.sex === "macho"
                           ? "Macho"
                           : pet.sex === "hembra"
@@ -396,16 +396,16 @@ export default function ExplorePage() {
                       </span>
                     </div>
                     <Link href={`/mascota/${pet.id}`}>
-                      <h3 className="font-bold text-balulu-text text-lg group-hover:text-balulu-primary-700 transition-colors">
+                      <h3 className="font-extrabold text-balulu-text text-xl group-hover:text-balulu-primary-700 transition-colors">
                         {pet.name}
                       </h3>
                     </Link>
-                    <p className="text-sm text-balulu-muted mt-1">
+                    <p className="text-[15px] font-medium text-balulu-muted mt-1">
                       {pet.breed || "Raza desconocida"} · {formatAge(pet.age_months)}
                     </p>
                     {pet.location && (
-                      <div className="flex items-center gap-1 mt-2 text-xs text-balulu-muted">
-                        <MapPin className="w-3.5 h-3.5" />
+                      <div className="flex items-center gap-1 mt-2.5 text-sm text-balulu-muted">
+                        <MapPin className="w-4 h-4" />
                         {pet.location}
                       </div>
                     )}
