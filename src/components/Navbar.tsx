@@ -15,6 +15,8 @@ import {
   Search,
   Building2,
   HeartHandshake,
+  Info,
+  UserCircle,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -60,6 +62,7 @@ export default function Navbar() {
   const navLinks = [
     { href: "/explorar", label: "Explorar", icon: Search },
     { href: "/favoritos", label: "Favoritos", icon: Heart },
+    { href: "/sobre-balulu", label: "Sobre BALULU", icon: Info },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -103,10 +106,16 @@ export default function Navbar() {
               </Link>
             ))}
             {!loading && user && (
-              <Link href="/organizacion" className="nav-link">
-                <Building2 className="w-4.5 h-4.5" />
-                Mi organizacion
-              </Link>
+              <>
+                <Link href="/perfil" className="nav-link">
+                  <UserCircle className="w-4.5 h-4.5" />
+                  Mi BALULU
+                </Link>
+                <Link href="/organizacion" className="nav-link">
+                  <Building2 className="w-4.5 h-4.5" />
+                  Mi organizacion
+                </Link>
+              </>
             )}
           </div>
 
@@ -198,6 +207,14 @@ export default function Navbar() {
                   <>
                     {user ? (
                       <>
+                        <Link
+                          href="/perfil"
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center gap-2 px-3 py-3 text-base font-semibold text-balulu-text hover:bg-balulu-primary-50 rounded-balulu-sm"
+                        >
+                          <UserCircle className="w-5 h-5" />
+                          Mi BALULU
+                        </Link>
                         <Link
                           href="/organizacion"
                           onClick={() => setMobileOpen(false)}

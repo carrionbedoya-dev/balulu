@@ -41,9 +41,12 @@ export default async function ProfilePage() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-balulu-text">
-                    {user.user_metadata?.full_name || user.email?.split("@")[0] || "Usuario"}
+                    Mi BALULU
                   </h1>
-                  <p className="text-balulu-muted">{user.email}</p>
+                  <p className="text-balulu-text font-semibold mt-0.5">
+                    {user.user_metadata?.full_name || user.email?.split("@")[0] || "Usuario"}
+                  </p>
+                  <p className="text-balulu-muted text-sm">{user.email}</p>
                   <span className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-balulu-secondary-50 text-balulu-secondary-700 text-xs font-medium rounded-full">
                     <PawPrint className="w-3 h-3" />
                     Adoptante
@@ -191,12 +194,25 @@ export default async function ProfilePage() {
                       <p className="font-medium text-balulu-text">
                         {interest.pets.name}
                       </p>
-                      <p className="text-sm text-balulu-muted">
-                        Estado:{" "}
-                        <span className="text-balulu-secondary-600 font-medium">
-                          {interest.status}
-                        </span>
-                      </p>
+                      <span
+                        className={`inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full ${
+                          interest.status === "adoptado"
+                            ? "bg-balulu-secondary-100 text-balulu-secondary-700"
+                            : interest.status === "aceptado"
+                            ? "bg-balulu-primary-100 text-balulu-primary-700"
+                            : interest.status === "rechazado"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-balulu-accent-100 text-balulu-accent-700"
+                        }`}
+                      >
+                        {interest.status === "adoptado"
+                          ? "Adoptada"
+                          : interest.status === "aceptado"
+                          ? "Aceptado, en proceso"
+                          : interest.status === "rechazado"
+                          ? "No fue posible"
+                          : "Esperando respuesta"}
+                      </span>
                     </div>
                   </div>
                 ))}
