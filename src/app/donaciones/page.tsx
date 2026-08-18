@@ -25,9 +25,31 @@ export default function DonationsPage() {
   return (
     <div className="min-h-screen bg-balulu-background">
       {/* Hero */}
-      <div className="bg-balulu-primary-900 py-20 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-balulu-primary-900 via-balulu-primary-800 to-balulu-secondary-900 py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1920&q=80')] bg-cover bg-center opacity-5" />
         <div className="absolute inset-0 bg-gradient-to-b from-balulu-primary-900/50 to-balulu-primary-950" />
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-white/10"
+            style={{
+              left: `${10 + i * 12}%`,
+              top: `${20 + (i % 3) * 20}%`,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              opacity: [0.1, 0.25, 0.1],
+              rotate: [0, i % 2 === 0 ? 10 : -10, 0],
+            }}
+            transition={{
+              duration: 4 + i,
+              repeat: Infinity,
+              delay: i * 0.4,
+            }}
+          >
+            <Heart className="w-8 h-8" fill="currentColor" />
+          </motion.div>
+        ))}
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <FadeIn>
             <motion.div
@@ -224,7 +246,13 @@ export default function DonationsPage() {
                   </ul>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() =>
+                      showToast(
+                        `¡Gracias por elegir ${tier.name}! La pasarela de pago se activara muy pronto.`,
+                        "success"
+                      )
+                    }
                     className={`w-full py-3 rounded-balulu-sm font-semibold transition-colors ${
                       tier.highlighted
                         ? "bg-white text-balulu-primary-700 hover:bg-balulu-primary-50"
@@ -255,8 +283,12 @@ export default function DonationsPage() {
                 <motion.button
                   key={amount}
                   whileHover={{ scale: 1.1, y: -4 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-balulu-primary-50 text-balulu-primary-700 font-semibold rounded-balulu-sm border-2 border-balulu-primary-200 hover:border-balulu-primary-500 hover:bg-balulu-primary-100 transition-all shadow-balulu hover:shadow-balulu-lg"
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    setCustomAmount(amount.replace("$", ""));
+                    showToast(`¡Gracias por tu donacion de ${amount}!`, "success");
+                  }}
+                  className="px-8 py-4 bg-gradient-to-br from-balulu-primary-50 to-balulu-secondary-50 text-balulu-primary-700 font-bold rounded-balulu-sm border-2 border-balulu-primary-200 hover:border-balulu-accent-400 hover:from-balulu-accent-50 hover:to-balulu-accent-100 hover:text-balulu-accent-700 transition-all shadow-balulu hover:shadow-balulu-lg"
                 >
                   {amount}
                 </motion.button>

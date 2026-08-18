@@ -128,42 +128,56 @@ export default function OrganizationDashboardPage() {
               label: "Total mascotas",
               value: stats.totalPets,
               icon: PawPrint,
-              color: "text-balulu-primary-600 bg-balulu-primary-50",
+              iconColor: "text-white bg-white/25",
+              bg: "bg-gradient-to-br from-balulu-primary-500 to-balulu-primary-700",
+              textColor: "text-white",
+              labelColor: "text-balulu-primary-100",
             },
             {
               label: "Disponibles",
               value: stats.availablePets,
               icon: Eye,
-              color: "text-balulu-secondary-600 bg-balulu-secondary-50",
+              iconColor: "text-white bg-white/25",
+              bg: "bg-gradient-to-br from-balulu-secondary-500 to-balulu-secondary-700",
+              textColor: "text-white",
+              labelColor: "text-balulu-secondary-100",
             },
             {
               label: "En proceso",
               value: stats.inProcessPets,
               icon: TrendingUp,
-              color: "text-balulu-accent-600 bg-balulu-accent-50",
+              iconColor: "text-white bg-white/25",
+              bg: "bg-gradient-to-br from-balulu-accent-500 to-balulu-accent-700",
+              textColor: "text-white",
+              labelColor: "text-balulu-accent-100",
             },
             {
               label: "Intereses",
               value: stats.totalInterests,
               icon: Heart,
-              color: "text-red-600 bg-red-50",
+              iconColor: "text-white bg-white/25",
+              bg: "bg-gradient-to-br from-rose-500 to-rose-700",
+              textColor: "text-white",
+              labelColor: "text-rose-100",
             },
           ].map((stat, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ scale: 1.03, y: -2 }}
-              className="bg-white rounded-balulu p-6 border border-balulu-border"
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: i * 0.1, type: "spring", stiffness: 200 }}
+              whileHover={{ scale: 1.05, y: -4 }}
+              className={`${stat.bg} rounded-balulu p-6 shadow-balulu-lg relative overflow-hidden`}
             >
-              <div className={`w-10 h-10 ${stat.color} rounded-balulu-sm flex items-center justify-center mb-3`}>
+              <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full" />
+              <div className="absolute -right-2 -bottom-6 w-16 h-16 bg-white/10 rounded-full" />
+              <div className={`w-10 h-10 ${stat.iconColor} rounded-balulu-sm flex items-center justify-center mb-3 relative`}>
                 <stat.icon className="w-5 h-5" />
               </div>
-              <p className="text-2xl font-bold text-balulu-text">
+              <p className={`text-3xl font-extrabold ${stat.textColor} relative`}>
                 {stat.value}
               </p>
-              <p className="text-sm text-balulu-muted">{stat.label}</p>
+              <p className={`text-sm font-medium ${stat.labelColor} relative`}>{stat.label}</p>
             </motion.div>
           ))}
         </div>

@@ -171,16 +171,16 @@
   }
 
   .nav-link {
-    @apply relative flex items-center gap-2 px-4 py-2.5 text-[15px] font-semibold text-balulu-muted rounded-balulu-sm transition-all duration-200;
+    @apply relative flex items-center gap-2 px-4 py-2.5 text-[16px] font-bold text-balulu-text/70 rounded-balulu-sm transition-all duration-200;
   }
 
   .nav-link:hover {
-    @apply text-balulu-primary-700 bg-balulu-primary-50;
+    @apply text-balulu-accent-600 bg-balulu-accent-50;
     transform: translateY(-1px);
   }
 
   .nav-link-active {
-    @apply text-balulu-primary-700 bg-balulu-primary-50;
+    @apply text-balulu-primary-700 bg-gradient-to-r from-balulu-primary-50 to-balulu-secondary-50;
   }
 
   .nav-link-active::after {
@@ -189,9 +189,9 @@
     bottom: -1px;
     left: 12px;
     right: 12px;
-    height: 2.5px;
+    height: 3px;
     border-radius: 2px;
-    background: linear-gradient(90deg, var(--color-balulu-primary-500), var(--color-balulu-accent-500));
+    background: linear-gradient(90deg, var(--color-balulu-primary-500), var(--color-balulu-secondary-500), var(--color-balulu-accent-500));
   }
 
   .oauth-btn {

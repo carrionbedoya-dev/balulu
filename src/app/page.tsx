@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, Heart, Shield, MessageCircle, ArrowRight, PawPrint } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
 import StaggerContainer, { StaggerItem } from "@/components/animations/StaggerContainer";
@@ -30,6 +30,16 @@ export default function LandingPage() {
     fetchStats();
   }, []);
 
+  const rotatingWords = ["compañero perfecto", "segunda oportunidad", "nueva familia", "mejor amigo"];
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % rotatingWords.length);
+    }, 2600);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -53,16 +63,22 @@ export default function LandingPage() {
               <PawPrint className="w-4 h-4" />
               Cancún, Quintana Roo
             </motion.div>
-            <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6 min-h-[1.2em] md:min-h-[1.2em]">
               Encuentra a tu{" "}
-              <motion.span
-                initial={{ opacity: 0, color: "#fff" }}
-                animate={{ opacity: 1, color: "#fb923c" }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-                className="text-balulu-accent-400"
-              >
-                compañero perfecto
-              </motion.span>
+              <span className="relative inline-block align-bottom">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={rotatingWords[wordIndex]}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                    className="text-balulu-accent-400 inline-block"
+                  >
+                    {rotatingWords[wordIndex]}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
             </h1>
             <p className="text-lg md:text-xl text-balulu-primary-200 mb-8 leading-relaxed max-w-2xl">
               BALULU conecta personas con mascotas que necesitan un hogar.
@@ -92,9 +108,9 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-3 gap-6 text-center">
             {[
-              { value: stats.available, label: "Mascotas disponibles" },
-              { value: stats.adopted, label: "Adopciones logradas" },
-              { value: stats.organizations, label: "Organizaciones activas" },
+              { value: stats.available, label: "Mascotas esperando un hogar" },
+              { value: stats.adopted, label: "Vidas cambiadas" },
+              { value: stats.organizations, label: "Refugios y organizaciones aliadas" },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}

@@ -195,18 +195,19 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-balulu-background">
-      <div className="bg-white border-b border-balulu-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl font-bold text-balulu-text mb-2">
+      <div className="relative bg-gradient-to-br from-balulu-primary-700 via-balulu-primary-800 to-balulu-secondary-800 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1920&q=80')] bg-cover bg-center opacity-10" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <h1 className="text-3xl md:text-4xl text-white mb-2 !font-extrabold">
             Explorar mascotas
           </h1>
-          <p className="text-balulu-muted">
+          <p className="text-balulu-primary-100 text-lg">
             Descubre a tu próximo compañero en Cancún y alrededores
           </p>
         </div>
       </div>
 
-      <div className="bg-white/90 backdrop-blur-md border-b border-balulu-border sticky top-20 z-40 shadow-sm">
+      <div className="bg-gradient-to-r from-balulu-primary-50 via-white to-balulu-secondary-50 backdrop-blur-md border-b border-balulu-border sticky top-20 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
