@@ -18,12 +18,29 @@ export const metadata: Metadata = {
   description:
     "BALULU conecta personas con mascotas que necesitan un hogar. Descubre, conoce y adopta de forma segura y emocional.",
   keywords: ["adopcion", "mascotas", "perros", "gatos", "refugios", "Cancun"],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "BALULU",
+  },
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title: "BALULU - Encuentra tu compañero perfecto",
     description:
       "BALULU conecta personas con mascotas que necesitan un hogar.",
     type: "website",
   },
+};
+
+export const viewport = {
+  themeColor: "#2563eb",
 };
 
 export default function RootLayout({

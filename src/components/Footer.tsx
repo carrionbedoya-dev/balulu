@@ -50,6 +50,14 @@ export default function Footer() {
               </li>
               <li>
                 <Link
+                  href="/historias-exitosas"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
+                  Vidas cambiadas
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/donaciones"
                   className="text-sm text-white/60 hover:text-white transition-colors"
                 >

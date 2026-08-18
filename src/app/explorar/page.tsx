@@ -15,6 +15,7 @@ import {
   Rabbit,
   Bird,
   X,
+  BadgeCheck,
 } from "lucide-react";
 
 interface Pet {
@@ -30,7 +31,7 @@ interface Pet {
   status: string | null;
   images: string[] | null;
   organization_id: string | null;
-  organizations: { name: string } | null;
+  organizations: { name: string; verified: boolean | null } | null;
 }
 
 const speciesIcons: Record<string, React.ReactNode> = {
@@ -87,7 +88,7 @@ export default function ExplorePage() {
       let query = publicSupabase
         .from("pets")
         .select(
-          "id, name, species, breed, age_months, size, sex, location, description, status, images, organization_id, organizations(name)"
+          "id, name, species, breed, age_months, size, sex, location, description, status, images, organization_id, organizations(name, verified)"
         )
         .eq("status", "disponible")
         .order("created_at", { ascending: false });
@@ -407,8 +408,14 @@ export default function ExplorePage() {
                       </span>
                     </div>
                     <Link href={`/mascota/${pet.id}`}>
-                      <h3 className="font-extrabold text-balulu-text text-xl group-hover:text-balulu-primary-700 transition-colors">
+                      <h3 className="font-extrabold text-balulu-text text-xl group-hover:text-balulu-primary-700 transition-colors flex items-center gap-1.5">
                         {pet.name}
+                        {pet.organizations?.verified && (
+                          <BadgeCheck
+                            className="w-5 h-5 text-balulu-secondary-500 flex-shrink-0"
+                            aria-label="Organizacion verificada"
+                          />
+                        )}
                       </h3>
                     </Link>
                     <p className="text-[15px] font-medium text-balulu-muted mt-1">

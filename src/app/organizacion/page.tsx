@@ -13,6 +13,7 @@ import {
   Trash2,
   Edit3,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import EmptyState from "@/components/EmptyState";
@@ -113,12 +114,20 @@ export default function OrganizationDashboardPage() {
               Gestiona tus mascotas y solicitudes de adopcion
             </p>
           </div>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link href="/organizacion/publicar" className="btn-primary">
-              <Plus className="w-5 h-5 mr-2" />
-              Publicar mascota
-            </Link>
-          </motion.div>
+          <div className="flex gap-3">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link href="/organizacion/compartir-historia" className="btn-secondary">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Compartir historia
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link href="/organizacion/publicar" className="btn-primary">
+                <Plus className="w-5 h-5 mr-2" />
+                Publicar mascota
+              </Link>
+            </motion.div>
+          </div>
         </FadeIn>
 
         {/* Stats */}
