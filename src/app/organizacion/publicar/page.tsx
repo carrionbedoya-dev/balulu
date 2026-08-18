@@ -43,6 +43,10 @@ export default function PublishPetPage() {
     sex: "macho",
     location: "Cancun, Quintana Roo",
     description: "",
+    good_with_children: false,
+    good_with_dogs: false,
+    good_with_cats: false,
+    special_needs: "",
   });
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -74,6 +78,10 @@ export default function PublishPetPage() {
       sex: formData.sex,
       location: formData.location,
       description: formData.description,
+      good_with_children: formData.good_with_children,
+      good_with_dogs: formData.good_with_dogs,
+      good_with_cats: formData.good_with_cats,
+      special_needs: formData.special_needs || null,
       images: imageUrl ? [imageUrl] : [],
       status: "disponible",
       created_by: user.id,
@@ -334,6 +342,60 @@ export default function PublishPetPage() {
                   Pega una URL de imagen. Proximamente podras subir fotos
                   directamente.
                 </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.45 }}
+              >
+                <label className="label">Compatibilidad</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { key: "good_with_children", label: "Buena con niños" },
+                    { key: "good_with_dogs", label: "Buena con perros" },
+                    { key: "good_with_cats", label: "Buena con gatos" },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          [item.key]:
+                            !formData[item.key as keyof typeof formData],
+                        })
+                      }
+                      className={`px-3 py-2.5 text-sm font-semibold rounded-balulu-sm border-2 transition-all ${
+                        formData[item.key as keyof typeof formData]
+                          ? "border-balulu-primary-500 bg-balulu-primary-50 text-balulu-primary-700"
+                          : "border-balulu-border text-balulu-muted hover:border-balulu-primary-300"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.47 }}
+              >
+                <label htmlFor="special_needs" className="label">
+                  Necesidades especiales (opcional)
+                </label>
+                <input
+                  id="special_needs"
+                  type="text"
+                  value={formData.special_needs}
+                  onChange={(e) =>
+                    setFormData({ ...formData, special_needs: e.target.value })
+                  }
+                  className="input"
+                  placeholder="Ej: medicacion diaria, dieta especial..."
+                />
               </motion.div>
 
               <motion.div

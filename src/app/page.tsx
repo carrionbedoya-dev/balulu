@@ -1,13 +1,35 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Search, Heart, Shield, MessageCircle, ArrowRight, PawPrint } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
 import StaggerContainer, { StaggerItem } from "@/components/animations/StaggerContainer";
+import { createPublicClient } from "@/lib/supabase/client";
 
 export default function LandingPage() {
+  const [stats, setStats] = useState({ available: 0, adopted: 0, organizations: 0 });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const supabase = createPublicClient();
+      const [{ count: available }, { count: adopted }, { count: organizations }] =
+        await Promise.all([
+          supabase.from("pets").select("*", { count: "exact", head: true }).eq("status", "disponible"),
+          supabase.from("pets").select("*", { count: "exact", head: true }).eq("status", "adoptado"),
+          supabase.from("organizations").select("*", { count: "exact", head: true }),
+        ]);
+      setStats({
+        available: available || 0,
+        adopted: adopted || 0,
+        organizations: organizations || 0,
+      });
+    };
+    fetchStats();
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -62,6 +84,34 @@ export default function LandingPage() {
               </Link>
             </motion.div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Impact Stats */}
+      <section className="py-14 bg-white border-b border-balulu-border">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-3 gap-6 text-center">
+            {[
+              { value: stats.available, label: "Mascotas disponibles" },
+              { value: stats.adopted, label: "Adopciones logradas" },
+              { value: stats.organizations, label: "Organizaciones activas" },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <p className="text-4xl md:text-5xl font-extrabold gradient-text">
+                  {stat.value}+
+                </p>
+                <p className="text-sm md:text-base text-balulu-muted font-medium mt-1">
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 

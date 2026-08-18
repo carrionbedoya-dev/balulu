@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, createPublicClient } from "@/lib/supabase/client";
 import {
   Heart,
   MapPin,
@@ -79,6 +79,32 @@ export default function PetProfileClient({
       setIsFavorite(true);
       showToast(`${pet.name} guardada en favoritos`, "success");
     }
+  };
+
+  const [similarPets, setSimilarPets] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSimilar = async () => {
+      const publicClient = createPublicClient();
+      const { data } = await publicClient
+        .from("pets")
+        .select("id, name, species, breed, images, age_months")
+        .eq("species", pet.species)
+        .eq("status", "disponible")
+        .neq("id", pet.id)
+        .limit(4);
+      setSimilarPets(data || []);
+    };
+    fetchSimilar();
+  }, [pet.id, pet.species]);
+
+  const shareOnWhatsApp = () => {
+    const url = window.location.href;
+    const text = `¡Mira a ${pet.name}! Esta buscando un hogar en BALULU 🐾 ${url}`;
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(text)}`,
+      "_blank"
+    );
   };
 
   const sendQuickChat = async () => {
@@ -165,20 +191,32 @@ export default function PetProfileClient({
                   )}
                 </motion.div>
               </AnimatePresence>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={toggleFavorite}
-                className="absolute top-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-balulu"
-              >
-                <Heart
-                  className={`w-6 h-6 ${
-                    isFavorite
-                      ? "fill-red-500 text-red-500"
-                      : "text-balulu-muted"
-                  }`}
-                />
-              </motion.button>
+              <div className="absolute top-4 right-4 flex gap-2">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={shareOnWhatsApp}
+                  className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-balulu"
+                  aria-label="Compartir por WhatsApp"
+                >
+                  <Share2 className="w-5 h-5 text-balulu-secondary-600" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={toggleFavorite}
+                  className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-balulu"
+                  aria-label="Agregar a favoritos"
+                >
+                  <Heart
+                    className={`w-6 h-6 ${
+                      isFavorite
+                        ? "fill-red-500 text-red-500"
+                        : "text-balulu-muted"
+                    }`}
+                  />
+                </motion.button>
+              </div>
             </div>
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-2">
@@ -330,27 +368,83 @@ export default function PetProfileClient({
             )}
 
             {/* Personality */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-white rounded-balulu p-6 border border-balulu-border"
-            >
-              <h3 className="font-semibold text-balulu-text mb-3">
-                Personalidad
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {personalityTraits.slice(0, 5).map((trait) => (
-                  <motion.span
-                    key={trait}
-                    whileHover={{ scale: 1.05 }}
-                    className="px-3 py-1.5 bg-balulu-primary-50 text-balulu-primary-700 text-sm rounded-full"
-                  >
-                    {trait}
-                  </motion.span>
-                ))}
-              </div>
-            </motion.div>
+            {pet.personality_traits && pet.personality_traits.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="bg-white rounded-balulu p-6 border border-balulu-border"
+              >
+                <h3 className="font-semibold text-balulu-text mb-3">
+                  Personalidad
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {pet.personality_traits.map((trait: string) => (
+                    <motion.span
+                      key={trait}
+                      whileHover={{ scale: 1.05 }}
+                      className="px-3 py-1.5 bg-balulu-primary-50 text-balulu-primary-700 text-sm rounded-full"
+                    >
+                      {trait}
+                    </motion.span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Compatibilidad familiar */}
+            {(pet.good_with_children !== null ||
+              pet.good_with_dogs !== null ||
+              pet.good_with_cats !== null ||
+              pet.special_needs) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+                className="bg-white rounded-balulu p-6 border border-balulu-border"
+              >
+                <h3 className="font-semibold text-balulu-text mb-3">
+                  Compatibilidad
+                </h3>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: "Niños", value: pet.good_with_children },
+                    { label: "Perros", value: pet.good_with_dogs },
+                    { label: "Gatos", value: pet.good_with_cats },
+                  ].map(
+                    (item) =>
+                      item.value !== null && (
+                        <div
+                          key={item.label}
+                          className={`flex flex-col items-center gap-1.5 p-3 rounded-balulu-sm border-2 ${
+                            item.value
+                              ? "border-balulu-secondary-200 bg-balulu-secondary-50"
+                              : "border-balulu-border bg-balulu-background"
+                          }`}
+                        >
+                          {item.value ? (
+                            <CheckCircle className="w-5 h-5 text-balulu-secondary-600" />
+                          ) : (
+                            <X className="w-5 h-5 text-balulu-muted" />
+                          )}
+                          <span className="text-xs font-semibold text-balulu-text">
+                            {item.label}
+                          </span>
+                        </div>
+                      )
+                  )}
+                </div>
+                {pet.special_needs && (
+                  <div className="mt-4 p-3 bg-balulu-accent-50 border border-balulu-accent-200 rounded-balulu-sm flex items-start gap-2">
+                    <Shield className="w-4 h-4 text-balulu-accent-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-balulu-accent-800">
+                      Tiene necesidades especiales de cuidado. Pregunta a la
+                      organizacion para mas detalles.
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+            )}
 
             {/* Organization */}
             {pet.organizations && (
@@ -424,6 +518,52 @@ export default function PetProfileClient({
           </motion.div>
         </div>
       </div>
+
+      {similarPets.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <h2 className="text-2xl font-bold text-balulu-text mb-6">
+            Otras mascotas que te podrian interesar
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {similarPets.map((sp, i) => (
+              <motion.div
+                key={sp.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                whileHover={{ y: -4 }}
+              >
+                <Link href={`/mascota/${sp.id}`} className="card group block">
+                  <div className="relative aspect-square bg-balulu-border overflow-hidden">
+                    {sp.images && sp.images.length > 0 ? (
+                      <Image
+                        src={sp.images[0]}
+                        alt={sp.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-balulu-primary-50">
+                        <PawPrint className="w-10 h-10 text-balulu-primary-300" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-bold text-balulu-text group-hover:text-balulu-primary-700 transition-colors">
+                      {sp.name}
+                    </h3>
+                    <p className="text-sm text-balulu-muted">
+                      {sp.breed || "Raza desconocida"}
+                    </p>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Quick Chat Modal */}
       <AnimatePresence>
