@@ -1,38 +1,24 @@
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
 
-let clientInstance: ReturnType<typeof createSupabaseClient<Database>> | null = null;
-let publicClientInstance: ReturnType<typeof createSupabaseClient<Database>> | null = null;
+let clientInstance: ReturnType<typeof createBrowserClient<Database>> | null = null;
 
-// Cliente con autenticación (para favoritos, login, perfil)
+// Cliente unico para el navegador. Usa cookies (no localStorage), igual que
+// el middleware y el cliente de servidor -- asi la sesion es consistente en
+// TODA la app, sin importar si el login fue por correo o por Google OAuth.
 export function createClient() {
   if (clientInstance) return clientInstance;
 
-  clientInstance = createSupabaseClient<Database>(
+  clientInstance = createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storageKey: "balulu-auth",
-        flowType: "pkce",
-      },
-    }
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
   return clientInstance;
 }
 
-// Cliente público SIN autenticación (para leer mascotas, organizaciones)
+// Alias para lecturas publicas (mascotas, organizaciones). Usa el mismo
+// cliente: no hace falta uno separado, y evita el bug de sesiones divergentes.
 export function createPublicClient() {
-  if (publicClientInstance) return publicClientInstance;
-
-  publicClientInstance = createSupabaseClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  return publicClientInstance;
+  return createClient();
 }
