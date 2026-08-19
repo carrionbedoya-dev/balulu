@@ -110,12 +110,26 @@ export default function PetProfileClient({
   const sendQuickChat = async () => {
     if (!selectedMessage || !userId) return;
 
-    await supabase.from("adoption_interests").insert({
-      user_id: userId,
-      pet_id: pet.id,
-      message: selectedMessage,
-      status: "pendiente",
-    });
+    const { data: newInterest } = await supabase
+      .from("adoption_interests")
+      .insert({
+        user_id: userId,
+        pet_id: pet.id,
+        message: selectedMessage,
+        status: "pendiente",
+      })
+      .select("id")
+      .single();
+
+    if (newInterest) {
+      fetch("/api/notify-new-interest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ interestId: newInterest.id }),
+      }).catch(() => {
+        // Falla silenciosa: el interes ya se guardo, el correo es un extra.
+      });
+    }
 
     setChatSent(true);
     showToast("Mensaje enviado exitosamente", "success");

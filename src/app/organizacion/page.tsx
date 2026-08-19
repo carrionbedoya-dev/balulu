@@ -48,6 +48,31 @@ export default function OrganizationDashboardPage() {
     fetchData();
   }, []);
 
+  const updateInterestStatus = async (interestId: string, newStatus: string) => {
+    const { error } = await supabase
+      .from("adoption_interests")
+      .update({ status: newStatus })
+      .eq("id", interestId);
+
+    if (error) {
+      showToast("No se pudo actualizar el estado", "error");
+      return;
+    }
+
+    setInterests((prev) =>
+      prev.map((i) => (i.id === interestId ? { ...i, status: newStatus } : i))
+    );
+    showToast("Estado actualizado", "success");
+
+    fetch("/api/notify-status-change", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interestId }),
+    }).catch(() => {
+      // Falla silenciosa: el estado ya se actualizo, el correo es un extra.
+    });
+  };
+
   async function fetchData() {
     const {
       data: { user },
@@ -330,20 +355,59 @@ export default function OrganizationDashboardPage() {
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center justify-between p-4 border border-balulu-border rounded-balulu-sm"
                 >
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium text-balulu-text">
                       Interes en {interest.pets?.name || "mascota"}
                     </p>
-                    <p className="text-sm text-balulu-muted">
-                      Estado:{" "}
-                      <span className="text-balulu-secondary-600 font-medium">
-                        {interest.status}
-                      </span>
-                    </p>
+                    <span
+                      className={`inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full ${
+                        interest.status === "adoptado"
+                          ? "bg-balulu-secondary-100 text-balulu-secondary-700"
+                          : interest.status === "aceptado"
+                          ? "bg-balulu-primary-100 text-balulu-primary-700"
+                          : interest.status === "rechazado"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-balulu-accent-100 text-balulu-accent-700"
+                      }`}
+                    >
+                      {interest.status || "pendiente"}
+                    </span>
                   </div>
-                  <span className="text-xs text-balulu-muted">
-                    {interest.created_at ? new Date(interest.created_at).toLocaleDateString("es-MX") : "Fecha desconocida"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {interest.status === "pendiente" && (
+                      <>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => updateInterestStatus(interest.id, "aceptado")}
+                          className="text-xs font-bold px-3 py-1.5 rounded-full bg-balulu-primary-600 text-white hover:bg-balulu-primary-700 transition-colors"
+                        >
+                          Aceptar
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => updateInterestStatus(interest.id, "rechazado")}
+                          className="text-xs font-bold px-3 py-1.5 rounded-full bg-white border border-balulu-border text-balulu-muted hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
+                        >
+                          Rechazar
+                        </motion.button>
+                      </>
+                    )}
+                    {interest.status === "aceptado" && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => updateInterestStatus(interest.id, "adoptado")}
+                        className="text-xs font-bold px-3 py-1.5 rounded-full bg-balulu-secondary-600 text-white hover:bg-balulu-secondary-700 transition-colors"
+                      >
+                        Marcar adoptado
+                      </motion.button>
+                    )}
+                    <span className="text-xs text-balulu-muted whitespace-nowrap">
+                      {interest.created_at ? new Date(interest.created_at).toLocaleDateString("es-MX") : "Fecha desconocida"}
+                    </span>
+                  </div>
                 </motion.div>
               ))}
             </div>
