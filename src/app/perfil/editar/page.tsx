@@ -11,6 +11,9 @@ import { useToast } from "@/components/Toast";
 export default function EditProfilePage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [notifyEmail, setNotifyEmail] = useState(true);
+  const [preferredSpecies, setPreferredSpecies] = useState<string[]>([]);
+  const [preferredSize, setPreferredSize] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
@@ -33,15 +36,31 @@ export default function EditProfilePage() {
 
     setEmail(user.email || "");
     setFullName(user.user_metadata?.full_name || "");
+    setNotifyEmail(user.user_metadata?.notify_email ?? true);
+    setPreferredSpecies(user.user_metadata?.preferred_species || []);
+    setPreferredSize(user.user_metadata?.preferred_size || "");
     setLoading(false);
   }
+
+  const toggleSpecies = (species: string) => {
+    setPreferredSpecies((prev) =>
+      prev.includes(species)
+        ? prev.filter((s) => s !== species)
+        : [...prev, species]
+    );
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
 
     const { error } = await supabase.auth.updateUser({
-      data: { full_name: fullName },
+      data: {
+        full_name: fullName,
+        notify_email: notifyEmail,
+        preferred_species: preferredSpecies,
+        preferred_size: preferredSize,
+      },
     });
 
     if (error) {
@@ -124,6 +143,73 @@ export default function EditProfilePage() {
                 className="input"
                 placeholder="Tu nombre completo"
               />
+            </div>
+
+            <div className="border-t border-balulu-border pt-6">
+              <h2 className="text-sm font-bold text-balulu-text uppercase tracking-wide mb-4">
+                Preferencias
+              </h2>
+
+              <div className="flex items-center justify-between p-4 bg-balulu-background rounded-balulu-sm mb-5">
+                <div>
+                  <p className="font-semibold text-balulu-text text-sm">
+                    Notificaciones por correo
+                  </p>
+                  <p className="text-xs text-balulu-muted mt-0.5">
+                    Avisos cuando cambie el estado de tus solicitudes
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setNotifyEmail(!notifyEmail)}
+                  className={`relative w-12 h-7 rounded-full transition-colors flex-shrink-0 ${
+                    notifyEmail ? "bg-balulu-primary-600" : "bg-balulu-border"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                      notifyEmail ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <div className="mb-5">
+                <label className="label">Tipo de mascota que te interesa</label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {["perro", "gato", "conejo", "ave"].map((species) => (
+                    <button
+                      key={species}
+                      type="button"
+                      onClick={() => toggleSpecies(species)}
+                      className={`px-3 py-2.5 text-sm font-semibold rounded-balulu-sm border-2 transition-all capitalize ${
+                        preferredSpecies.includes(species)
+                          ? "border-balulu-primary-500 bg-balulu-primary-50 text-balulu-primary-700"
+                          : "border-balulu-border text-balulu-muted hover:border-balulu-primary-300"
+                      }`}
+                    >
+                      {species}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="preferredSize" className="label">
+                  Tamano preferido
+                </label>
+                <select
+                  id="preferredSize"
+                  value={preferredSize}
+                  onChange={(e) => setPreferredSize(e.target.value)}
+                  className="input"
+                >
+                  <option value="">Sin preferencia</option>
+                  <option value="pequeno">Pequeno</option>
+                  <option value="mediano">Mediano</option>
+                  <option value="grande">Grande</option>
+                </select>
+              </div>
             </div>
 
             <motion.button

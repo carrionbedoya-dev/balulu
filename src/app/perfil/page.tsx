@@ -33,21 +33,23 @@ export default async function ProfilePage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <FadeIn>
-          <div className="bg-white rounded-balulu shadow-balulu p-8 mb-6">
-            <div className="flex items-start justify-between">
+          <div className="relative bg-gradient-to-br from-balulu-primary-600 via-balulu-primary-700 to-balulu-secondary-700 rounded-balulu shadow-balulu-lg p-8 mb-6 overflow-hidden">
+            <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full" />
+            <div className="absolute right-16 -bottom-12 w-28 h-28 bg-white/10 rounded-full" />
+            <div className="relative flex items-start justify-between flex-wrap gap-4">
               <div className="flex items-center gap-6">
-                <div className="w-20 h-20 bg-balulu-primary-100 rounded-balulu flex items-center justify-center">
-                  <User className="w-10 h-10 text-balulu-primary-600" />
+                <div className="w-20 h-20 bg-white/15 backdrop-blur-sm rounded-balulu flex items-center justify-center border-2 border-white/20">
+                  <User className="w-10 h-10 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-balulu-text">
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-white">
                     Mi BALULU
                   </h1>
-                  <p className="text-balulu-text font-semibold mt-0.5">
+                  <p className="text-white font-semibold mt-0.5">
                     {user.user_metadata?.full_name || user.email?.split("@")[0] || "Usuario"}
                   </p>
-                  <p className="text-balulu-muted text-sm">{user.email}</p>
-                  <span className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-balulu-secondary-50 text-balulu-secondary-700 text-xs font-medium rounded-full">
+                  <p className="text-white/70 text-sm">{user.email}</p>
+                  <span className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-bold rounded-full">
                     <PawPrint className="w-3 h-3" />
                     Adoptante
                   </span>
@@ -55,10 +57,10 @@ export default async function ProfilePage() {
               </div>
               <Link
                 href="/perfil/editar"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-balulu-primary-700 bg-balulu-primary-50 rounded-balulu-sm hover:bg-balulu-primary-100 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-balulu-primary-700 bg-white rounded-full hover:scale-105 active:scale-95 transition-transform shadow-balulu"
               >
                 <Edit3 className="w-4 h-4" />
-                Editar
+                Editar perfil
               </Link>
             </div>
           </div>
@@ -71,19 +73,19 @@ export default async function ProfilePage() {
               icon: Heart,
               value: favorites?.length || 0,
               label: "Favoritos guardados",
-              color: "text-balulu-accent-500",
+              bg: "bg-gradient-to-br from-rose-500 to-rose-700",
             },
             {
               icon: MessageCircle,
               value: interests?.length || 0,
               label: "Intereses de adopcion",
-              color: "text-balulu-primary-500",
+              bg: "bg-gradient-to-br from-balulu-primary-500 to-balulu-primary-700",
             },
             {
               icon: Settings,
               value: null,
-              label: "Configuracion",
-              color: "text-balulu-muted",
+              label: "Configuracion y preferencias",
+              bg: "bg-gradient-to-br from-balulu-secondary-500 to-balulu-secondary-700",
               href: "/perfil/editar",
             },
           ].map((stat, i) => (
@@ -91,24 +93,26 @@ export default async function ProfilePage() {
               {stat.href ? (
                 <Link
                   href={stat.href}
-                  className="bg-white rounded-balulu p-6 border border-balulu-border hover:border-balulu-primary-300 transition-colors block"
+                  className={`${stat.bg} rounded-balulu p-6 shadow-balulu-lg relative overflow-hidden block hover:scale-[1.03] hover:-translate-y-1 active:scale-[0.98] transition-transform duration-200`}
                 >
-                  <div className={`w-10 h-10 bg-balulu-primary-50 rounded-balulu-sm flex items-center justify-center mb-3`}>
-                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                  <div className="absolute -right-3 -top-3 w-16 h-16 bg-white/10 rounded-full" />
+                  <div className="w-10 h-10 bg-white/20 rounded-balulu-sm flex items-center justify-center mb-3 relative">
+                    <stat.icon className="w-5 h-5 text-white" />
                   </div>
-                  <p className="text-sm font-medium text-balulu-text">
+                  <p className="text-sm font-bold text-white relative">
                     {stat.label}
                   </p>
                 </Link>
               ) : (
-                <div className="bg-white rounded-balulu p-6 border border-balulu-border">
-                  <div className={`w-10 h-10 bg-balulu-primary-50 rounded-balulu-sm flex items-center justify-center mb-3`}>
-                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                <div className={`${stat.bg} rounded-balulu p-6 shadow-balulu-lg relative overflow-hidden hover:scale-[1.03] hover:-translate-y-1 transition-transform duration-200`}>
+                  <div className="absolute -right-3 -top-3 w-16 h-16 bg-white/10 rounded-full" />
+                  <div className="w-10 h-10 bg-white/20 rounded-balulu-sm flex items-center justify-center mb-3 relative">
+                    <stat.icon className="w-5 h-5 text-white" />
                   </div>
-                  <p className="text-2xl font-bold text-balulu-text">
+                  <p className="text-3xl font-extrabold text-white relative">
                     {stat.value}
                   </p>
-                  <p className="text-sm text-balulu-muted">{stat.label}</p>
+                  <p className="text-sm font-medium text-white/80 relative">{stat.label}</p>
                 </div>
               )}
             </FadeIn>

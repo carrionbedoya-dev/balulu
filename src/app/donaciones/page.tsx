@@ -1,16 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, PawPrint, Shield, Users, ArrowRight, DollarSign } from "lucide-react";
+import { Heart, PawPrint, Shield, Users, ArrowRight, DollarSign, X, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { AnimatePresence } from "framer-motion";
 import FadeIn from "@/components/animations/FadeIn";
 import StaggerContainer, { StaggerItem } from "@/components/animations/StaggerContainer";
 import { useToast } from "@/components/Toast";
 
 export default function DonationsPage() {
   const [customAmount, setCustomAmount] = useState("");
+  const [showDonorModal, setShowDonorModal] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [donorEmail, setDonorEmail] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const { showToast } = useToast();
+  const router = useRouter();
+
+  const openDonorModal = (amount: number) => {
+    setSelectedAmount(amount);
+    setShowDonorModal(true);
+  };
 
   const handleCustomDonation = () => {
     const amount = parseFloat(customAmount);
@@ -18,8 +31,31 @@ export default function DonationsPage() {
       showToast("Ingresa un monto valido", "error");
       return;
     }
-    showToast(`Gracias por tu donacion de $${amount}!`, "success");
-    setCustomAmount("");
+    openDonorModal(amount);
+  };
+
+  const confirmDonation = async () => {
+    if (!donorEmail || !selectedAmount) {
+      showToast("Ingresa tu correo para continuar", "error");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/donar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          donorEmail,
+          donorName,
+          amount: selectedAmount,
+        }),
+      });
+      if (!res.ok) throw new Error("fallo");
+      router.push("/donaciones/exito");
+    } catch {
+      showToast("No se pudo procesar tu donacion, intenta de nuevo", "error");
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -247,12 +283,7 @@ export default function DonationsPage() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() =>
-                      showToast(
-                        `¡Gracias por elegir ${tier.name}! La pasarela de pago se activara muy pronto.`,
-                        "success"
-                      )
-                    }
+                    onClick={() => openDonorModal(parseFloat(tier.amount.replace("$", "")))}
                     className={`w-full py-3 rounded-balulu-sm font-semibold transition-colors ${
                       tier.highlighted
                         ? "bg-white text-balulu-primary-700 hover:bg-balulu-primary-50"
@@ -284,10 +315,7 @@ export default function DonationsPage() {
                   key={amount}
                   whileHover={{ scale: 1.1, y: -4 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => {
-                    setCustomAmount(amount.replace("$", ""));
-                    showToast(`¡Gracias por tu donacion de ${amount}!`, "success");
-                  }}
+                  onClick={() => openDonorModal(parseFloat(amount.replace("$", "")))}
                   className="px-8 py-4 bg-gradient-to-br from-balulu-primary-50 to-balulu-secondary-50 text-balulu-primary-700 font-bold rounded-balulu-sm border-2 border-balulu-primary-200 hover:border-balulu-accent-400 hover:from-balulu-accent-50 hover:to-balulu-accent-100 hover:text-balulu-accent-700 transition-all shadow-balulu hover:shadow-balulu-lg"
                 >
                   {amount}
@@ -391,6 +419,95 @@ export default function DonationsPage() {
           </FadeIn>
         </div>
       </section>
+
+      <AnimatePresence>
+        {showDonorModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+            onClick={() => !submitting && setShowDonorModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-balulu shadow-balulu-lg max-w-md w-full p-8 relative"
+            >
+              <button
+                onClick={() => setShowDonorModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-balulu-background flex items-center justify-center hover:bg-balulu-border transition-colors"
+              >
+                <X className="w-4 h-4 text-balulu-muted" />
+              </button>
+
+              <div className="w-14 h-14 bg-balulu-primary-100 rounded-balulu mb-4 flex items-center justify-center">
+                <Heart className="w-7 h-7 text-balulu-primary-600" fill="currentColor" />
+              </div>
+              <h3 className="text-xl font-bold text-balulu-text mb-1">
+                Ultimo paso
+              </h3>
+              <p className="text-balulu-muted text-sm mb-6">
+                Vas a donar{" "}
+                <span className="font-bold text-balulu-primary-700">
+                  ${selectedAmount}
+                </span>
+                . Dejanos tu correo para confirmar.
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="label">Nombre (opcional)</label>
+                  <input
+                    type="text"
+                    value={donorName}
+                    onChange={(e) => setDonorName(e.target.value)}
+                    className="input"
+                    placeholder="Tu nombre"
+                  />
+                </div>
+                <div>
+                  <label className="label">Correo electronico</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-balulu-muted" />
+                    <input
+                      type="email"
+                      value={donorEmail}
+                      onChange={(e) => setDonorEmail(e.target.value)}
+                      required
+                      className="input pl-10"
+                      placeholder="tu@email.com"
+                    />
+                  </div>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={confirmDonation}
+                  disabled={submitting}
+                  className="btn-primary w-full disabled:opacity-60"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Procesando...
+                    </>
+                  ) : (
+                    "Confirmar donacion"
+                  )}
+                </motion.button>
+                <p className="text-xs text-balulu-muted text-center">
+                  La pasarela de pago (Mercado Pago) se conectara pronto. Por
+                  ahora registramos tu intencion y te contactaremos.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
