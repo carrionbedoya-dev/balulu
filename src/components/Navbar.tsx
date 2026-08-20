@@ -60,7 +60,7 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { href: "/explorar", label: "Explorar", icon: Search },
+    { href: "/explorar", label: "Conocer mascotas", icon: Search },
     { href: "/favoritos", label: "Favoritos", icon: Heart },
     { href: "/sobre-balulu", label: "Sobre BALULU", icon: Info },
   ];

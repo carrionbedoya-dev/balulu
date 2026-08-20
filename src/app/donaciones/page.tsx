@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, PawPrint, Shield, Users, ArrowRight, DollarSign, X, Mail, Loader2 } from "lucide-react";
+import { Heart, PawPrint, Shield, Users, ArrowRight, DollarSign, X, Mail, Loader2, CreditCard, Landmark } from "lucide-react";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import FadeIn from "@/components/animations/FadeIn";
@@ -17,6 +17,7 @@ export default function DonationsPage() {
   const [donorEmail, setDonorEmail] = useState("");
   const [donorName, setDonorName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"tarjeta" | "transferencia">("tarjeta");
   const { showToast } = useToast();
   const router = useRouter();
 
@@ -48,6 +49,7 @@ export default function DonationsPage() {
           donorEmail,
           donorName,
           amount: selectedAmount,
+          paymentMethod,
         }),
       });
       if (!res.ok) throw new Error("fallo");
@@ -412,7 +414,7 @@ export default function DonationsPage() {
                 href="/explorar"
                 className="btn-accent text-lg px-8 py-4 inline-flex"
               >
-                Explorar mascotas
+                Conocer mascotas
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
             </motion.div>
@@ -458,6 +460,52 @@ export default function DonationsPage() {
               </p>
 
               <div className="space-y-4">
+                <div>
+                  <label className="label">Metodo de pago</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("tarjeta")}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-balulu-sm border-2 transition-all ${
+                        paymentMethod === "tarjeta"
+                          ? "border-balulu-primary-500 bg-balulu-primary-50"
+                          : "border-balulu-border hover:border-balulu-primary-300"
+                      }`}
+                    >
+                      <CreditCard
+                        className={`w-5 h-5 ${
+                          paymentMethod === "tarjeta"
+                            ? "text-balulu-primary-600"
+                            : "text-balulu-muted"
+                        }`}
+                      />
+                      <span className="text-sm font-semibold text-balulu-text">
+                        Tarjeta
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("transferencia")}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-balulu-sm border-2 transition-all ${
+                        paymentMethod === "transferencia"
+                          ? "border-balulu-primary-500 bg-balulu-primary-50"
+                          : "border-balulu-border hover:border-balulu-primary-300"
+                      }`}
+                    >
+                      <Landmark
+                        className={`w-5 h-5 ${
+                          paymentMethod === "transferencia"
+                            ? "text-balulu-primary-600"
+                            : "text-balulu-muted"
+                        }`}
+                      />
+                      <span className="text-sm font-semibold text-balulu-text">
+                        Transferencia
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
                 <div>
                   <label className="label">Nombre (opcional)</label>
                   <input

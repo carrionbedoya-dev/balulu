@@ -12,6 +12,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
+import ImageUpload from "@/components/ImageUpload";
 
 const speciesOptions = [
   { value: "perro", label: "Perro" },
@@ -47,6 +48,9 @@ export default function PublishPetPage() {
     good_with_dogs: false,
     good_with_cats: false,
     special_needs: "",
+    contact_phone: "",
+    contact_whatsapp: "",
+    contact_instagram: "",
   });
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -77,11 +81,14 @@ export default function PublishPetPage() {
       size: formData.size,
       sex: formData.sex,
       location: formData.location,
-      description: formData.description,
+      description: formData.description || null,
       good_with_children: formData.good_with_children,
       good_with_dogs: formData.good_with_dogs,
       good_with_cats: formData.good_with_cats,
       special_needs: formData.special_needs || null,
+      contact_phone: formData.contact_phone || null,
+      contact_whatsapp: formData.contact_whatsapp || null,
+      contact_instagram: formData.contact_instagram || null,
       images: imageUrl ? [imageUrl] : [],
       status: "disponible",
       created_by: user.id,
@@ -256,11 +263,10 @@ export default function PublishPetPage() {
                   transition={{ delay: 0.3 }}
                 >
                   <label htmlFor="size" className="label">
-                    Tamaño *
+                    Tamaño
                   </label>
                   <select
                     id="size"
-                    required
                     value={formData.size}
                     onChange={(e) =>
                       setFormData({ ...formData, size: e.target.value })
@@ -281,11 +287,10 @@ export default function PublishPetPage() {
                   transition={{ delay: 0.35 }}
                 >
                   <label htmlFor="sex" className="label">
-                    Sexo *
+                    Sexo
                   </label>
                   <select
                     id="sex"
-                    required
                     value={formData.sex}
                     onChange={(e) =>
                       setFormData({ ...formData, sex: e.target.value })
@@ -307,12 +312,11 @@ export default function PublishPetPage() {
                 transition={{ delay: 0.4 }}
               >
                 <label htmlFor="location" className="label">
-                  Ubicacion *
+                  Ubicacion
                 </label>
                 <input
                   id="location"
                   type="text"
-                  required
                   value={formData.location}
                   onChange={(e) =>
                     setFormData({ ...formData, location: e.target.value })
@@ -327,21 +331,7 @@ export default function PublishPetPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.45 }}
               >
-                <label htmlFor="imageUrl" className="label">
-                  URL de la imagen
-                </label>
-                <input
-                  id="imageUrl"
-                  type="url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="input"
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                />
-                <p className="text-xs text-balulu-muted mt-1">
-                  Pega una URL de imagen. Proximamente podras subir fotos
-                  directamente.
-                </p>
+                <ImageUpload value={imageUrl} onChange={setImageUrl} />
               </motion.div>
 
               <motion.div
@@ -401,14 +391,53 @@ export default function PublishPetPage() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.48 }}
+              >
+                <label className="label">Contacto para esta mascota (opcional)</label>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  <input
+                    type="tel"
+                    value={formData.contact_phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, contact_phone: e.target.value })
+                    }
+                    className="input"
+                    placeholder="Telefono"
+                  />
+                  <input
+                    type="tel"
+                    value={formData.contact_whatsapp}
+                    onChange={(e) =>
+                      setFormData({ ...formData, contact_whatsapp: e.target.value })
+                    }
+                    className="input"
+                    placeholder="WhatsApp"
+                  />
+                  <input
+                    type="text"
+                    value={formData.contact_instagram}
+                    onChange={(e) =>
+                      setFormData({ ...formData, contact_instagram: e.target.value })
+                    }
+                    className="input"
+                    placeholder="@instagram"
+                  />
+                </div>
+                <p className="text-xs text-balulu-muted mt-1.5">
+                  Se mostrara en el perfil de esta mascota para que puedan contactarte directo.
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
               >
                 <label htmlFor="description" className="label">
-                  Descripcion *
+                  Descripcion
                 </label>
                 <textarea
                   id="description"
-                  required
                   rows={4}
                   value={formData.description}
                   onChange={(e) =>
@@ -431,7 +460,7 @@ export default function PublishPetPage() {
                   disabled={loading}
                   className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Publicando..." : "Publicar mascota"}
+                  {loading ? "Publicando..." : "Dar en adopcion"}
                 </motion.button>
               </motion.div>
             </form>

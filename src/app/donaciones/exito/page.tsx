@@ -29,7 +29,7 @@ export default function DonationSuccessPage() {
         </p>
         <div className="flex flex-col gap-3">
           <Link href="/explorar" className="btn-primary justify-center">
-            Explorar mascotas
+            Conocer mascotas
             <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
           <Link

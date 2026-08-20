@@ -73,7 +73,7 @@ export default function SuccessStoriesPage() {
             type="general"
             title="Todavia no hay historias publicadas"
             description="Cuando una organizacion marque una mascota como adoptada, su historia podra aparecer aqui."
-            actionLabel="Explorar mascotas"
+            actionLabel="Conocer mascotas"
             actionHref="/explorar"
           />
         ) : (

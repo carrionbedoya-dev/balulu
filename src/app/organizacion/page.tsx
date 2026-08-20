@@ -35,6 +35,7 @@ interface Interest {
   status: string | null;
   created_at: string | null;
   pets: { name: string } | null;
+  org_reply?: string | null;
 }
 
 export default function OrganizationDashboardPage() {
@@ -47,6 +48,40 @@ export default function OrganizationDashboardPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const orgQuickReplies = [
+    "Claro, cuentanos un poco mas sobre ti y tu hogar",
+    "Podemos agendar una visita esta semana",
+    "Necesitamos que completes una breve entrevista antes de continuar",
+    "Perfecto, contactanos por WhatsApp para coordinar los detalles",
+  ];
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+
+  const sendOrgReply = async (interestId: string, reply: string) => {
+    const { error } = await supabase
+      .from("adoption_interests")
+      .update({ status: "aceptado", org_reply: reply })
+      .eq("id", interestId);
+
+    if (error) {
+      showToast("No se pudo enviar la respuesta", "error");
+      return;
+    }
+
+    setInterests((prev) =>
+      prev.map((i) =>
+        i.id === interestId ? { ...i, status: "aceptado", org_reply: reply } : i
+      )
+    );
+    setReplyingTo(null);
+    showToast("Respuesta enviada", "success");
+
+    fetch("/api/notify-status-change", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interestId }),
+    }).catch(() => {});
+  };
 
   const updateInterestStatus = async (interestId: string, newStatus: string) => {
     const { error } = await supabase
@@ -91,7 +126,7 @@ export default function OrganizationDashboardPage() {
 
     const { data: myInterests } = await supabase
       .from("adoption_interests")
-      .select("id, pet_id, status, created_at, pets(name)")
+      .select("id, pet_id, status, created_at, org_reply, pets(name)")
       .in(
         "pet_id",
         myPets?.map((p) => p.id) || []
@@ -149,7 +184,7 @@ export default function OrganizationDashboardPage() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/organizacion/publicar" className="btn-primary">
                 <Plus className="w-5 h-5 mr-2" />
-                Publicar mascota
+                Dar en adopcion
               </Link>
             </motion.div>
           </div>
@@ -353,61 +388,89 @@ export default function OrganizationDashboardPage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex items-center justify-between p-4 border border-balulu-border rounded-balulu-sm"
+                  className="flex flex-col gap-3 p-4 border border-balulu-border rounded-balulu-sm"
                 >
-                  <div className="flex-1">
-                    <p className="font-medium text-balulu-text">
-                      Interes en {interest.pets?.name || "mascota"}
-                    </p>
-                    <span
-                      className={`inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full ${
-                        interest.status === "adoptado"
-                          ? "bg-balulu-secondary-100 text-balulu-secondary-700"
-                          : interest.status === "aceptado"
-                          ? "bg-balulu-primary-100 text-balulu-primary-700"
-                          : interest.status === "rechazado"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-balulu-accent-100 text-balulu-accent-700"
-                      }`}
-                    >
-                      {interest.status || "pendiente"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {interest.status === "pendiente" && (
-                      <>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => updateInterestStatus(interest.id, "aceptado")}
-                          className="text-xs font-bold px-3 py-1.5 rounded-full bg-balulu-primary-600 text-white hover:bg-balulu-primary-700 transition-colors"
-                        >
-                          Aceptar
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => updateInterestStatus(interest.id, "rechazado")}
-                          className="text-xs font-bold px-3 py-1.5 rounded-full bg-white border border-balulu-border text-balulu-muted hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
-                        >
-                          Rechazar
-                        </motion.button>
-                      </>
-                    )}
-                    {interest.status === "aceptado" && (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => updateInterestStatus(interest.id, "adoptado")}
-                        className="text-xs font-bold px-3 py-1.5 rounded-full bg-balulu-secondary-600 text-white hover:bg-balulu-secondary-700 transition-colors"
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <p className="font-medium text-balulu-text">
+                        Interes en {interest.pets?.name || "mascota"}
+                      </p>
+                      <span
+                        className={`inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full ${
+                          interest.status === "adoptado"
+                            ? "bg-balulu-secondary-100 text-balulu-secondary-700"
+                            : interest.status === "aceptado"
+                            ? "bg-balulu-primary-100 text-balulu-primary-700"
+                            : interest.status === "rechazado"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-balulu-accent-100 text-balulu-accent-700"
+                        }`}
                       >
-                        Marcar adoptado
-                      </motion.button>
-                    )}
-                    <span className="text-xs text-balulu-muted whitespace-nowrap">
-                      {interest.created_at ? new Date(interest.created_at).toLocaleDateString("es-MX") : "Fecha desconocida"}
-                    </span>
+                        {interest.status || "pendiente"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {interest.status === "pendiente" && (
+                        <>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() =>
+                              setReplyingTo(replyingTo === interest.id ? null : interest.id)
+                            }
+                            className="text-xs font-bold px-3 py-1.5 rounded-full bg-balulu-primary-600 text-white hover:bg-balulu-primary-700 transition-colors"
+                          >
+                            Responder
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => updateInterestStatus(interest.id, "rechazado")}
+                            className="text-xs font-bold px-3 py-1.5 rounded-full bg-white border border-balulu-border text-balulu-muted hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
+                          >
+                            Rechazar
+                          </motion.button>
+                        </>
+                      )}
+                      {interest.status === "aceptado" && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => updateInterestStatus(interest.id, "adoptado")}
+                          className="text-xs font-bold px-3 py-1.5 rounded-full bg-balulu-secondary-600 text-white hover:bg-balulu-secondary-700 transition-colors"
+                        >
+                          Marcar adoptado
+                        </motion.button>
+                      )}
+                      <span className="text-xs text-balulu-muted whitespace-nowrap">
+                        {interest.created_at ? new Date(interest.created_at).toLocaleDateString("es-MX") : "Fecha desconocida"}
+                      </span>
+                    </div>
                   </div>
+
+                  {interest.org_reply && (
+                    <div className="bg-balulu-primary-50 rounded-balulu-sm p-3 text-sm text-balulu-primary-800">
+                      <span className="font-bold">Tu respuesta: </span>
+                      {interest.org_reply}
+                    </div>
+                  )}
+
+                  {replyingTo === interest.id && (
+                    <div className="bg-balulu-background rounded-balulu-sm p-3 space-y-2">
+                      <p className="text-xs font-semibold text-balulu-muted uppercase tracking-wide">
+                        Elige una respuesta rapida
+                      </p>
+                      {orgQuickReplies.map((reply) => (
+                        <button
+                          key={reply}
+                          onClick={() => sendOrgReply(interest.id, reply)}
+                          className="block w-full text-left text-sm p-2.5 rounded-balulu-sm bg-white border border-balulu-border hover:border-balulu-primary-400 hover:bg-balulu-primary-50 transition-colors"
+                        >
+                          {reply}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>

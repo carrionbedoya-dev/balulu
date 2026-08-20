@@ -37,7 +37,7 @@ export default function Footer() {
                   href="/explorar"
                   className="text-sm text-white/60 hover:text-white transition-colors"
                 >
-                  Explorar mascotas
+                  Conocer mascotas
                 </Link>
               </li>
               <li>

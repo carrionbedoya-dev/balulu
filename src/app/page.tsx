@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Heart, Shield, MessageCircle, ArrowRight, PawPrint } from "lucide-react";
+import { Search, Heart, Shield, MessageCircle, ArrowRight, PawPrint, PlusCircle } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
 import StaggerContainer, { StaggerItem } from "@/components/animations/StaggerContainer";
 import { createPublicClient } from "@/lib/supabase/client";
@@ -92,11 +92,15 @@ export default function LandingPage() {
               className="flex flex-col sm:flex-row gap-4"
             >
               <Link href="/explorar" className="btn-accent text-base justify-center">
-                Explorar mascotas
+                Conocer mascotas
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
-              <Link href="/sobre-balulu" className="btn-secondary text-base justify-center bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30">
-                Conocer más
+              <Link
+                href="/organizacion/publicar"
+                className="btn-secondary text-base justify-center bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30"
+              >
+                <PlusCircle className="w-5 h-5 mr-2" />
+                Dar en adopcion
               </Link>
             </motion.div>
           </motion.div>

@@ -23,7 +23,7 @@ export default async function ProfilePage() {
 
   const { data: interests } = await supabase
     .from("adoption_interests")
-    .select("pets(id, name, species, images), status, created_at")
+    .select("pets(id, name, species, images), status, org_reply, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(3);
@@ -217,6 +217,12 @@ export default async function ProfilePage() {
                           ? "No fue posible"
                           : "Esperando respuesta"}
                       </span>
+                      {interest.org_reply && (
+                        <p className="text-sm text-balulu-text mt-2 bg-balulu-primary-50 rounded-balulu-sm p-2.5">
+                          <span className="font-bold">Respuesta: </span>
+                          {interest.org_reply}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}

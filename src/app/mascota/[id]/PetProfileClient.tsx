@@ -491,6 +491,51 @@ export default function PetProfileClient({
               </motion.div>
             )}
 
+            {/* Contacto directo */}
+            {(pet.contact_phone || pet.contact_whatsapp || pet.contact_instagram) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65 }}
+                className="bg-white rounded-balulu p-6 border border-balulu-border"
+              >
+                <h3 className="font-semibold text-balulu-text mb-3">
+                  Contacto directo
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {pet.contact_whatsapp && (
+                    
+                      href={`https://wa.me/${pet.contact_whatsapp.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-balulu-secondary-50 text-balulu-secondary-700 text-sm font-semibold rounded-full hover:bg-balulu-secondary-100 transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      WhatsApp
+                    </a>
+                  )}
+                  {pet.contact_phone && (
+                    
+                      href={`tel:${pet.contact_phone}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-balulu-primary-50 text-balulu-primary-700 text-sm font-semibold rounded-full hover:bg-balulu-primary-100 transition-colors"
+                    >
+                      {pet.contact_phone}
+                    </a>
+                  )}
+                  {pet.contact_instagram && (
+                    
+                      href={`https://instagram.com/${pet.contact_instagram.replace("@", "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-balulu-accent-50 text-balulu-accent-700 text-sm font-semibold rounded-full hover:bg-balulu-accent-100 transition-colors"
+                    >
+                      {pet.contact_instagram}
+                    </a>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
             {/* CTA */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

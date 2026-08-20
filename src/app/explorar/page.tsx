@@ -16,6 +16,7 @@ import {
   Bird,
   X,
   BadgeCheck,
+  PlusCircle,
 } from "lucide-react";
 
 interface Pet {
@@ -198,13 +199,22 @@ export default function ExplorePage() {
     <div className="min-h-screen bg-balulu-background">
       <div className="relative bg-gradient-to-br from-balulu-primary-700 via-balulu-primary-800 to-balulu-secondary-800 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1920&q=80')] bg-cover bg-center opacity-10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <h1 className="text-3xl md:text-4xl text-white mb-2 !font-extrabold">
-            Explorar mascotas
-          </h1>
-          <p className="text-balulu-primary-100 text-lg">
-            Descubre a tu próximo compañero en Cancún y alrededores
-          </p>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl text-white mb-2 !font-extrabold">
+              Conocer mascotas
+            </h1>
+            <p className="text-balulu-primary-100 text-lg">
+              Descubre a tu próximo compañero en Cancún y alrededores
+            </p>
+          </div>
+          <Link
+            href="/organizacion/publicar"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-white text-balulu-primary-700 font-bold rounded-full hover:scale-105 active:scale-95 transition-transform shadow-balulu flex-shrink-0 w-fit"
+          >
+            <PlusCircle className="w-5 h-5" />
+            Dar en adopcion
+          </Link>
         </div>
       </div>
 
