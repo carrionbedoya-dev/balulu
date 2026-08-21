@@ -17,6 +17,7 @@ import {
   HeartHandshake,
   Info,
   UserCircle,
+  Users,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -61,6 +62,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/explorar", label: "Conocer mascotas", icon: Search },
+    { href: "/foster", label: "Foster temporal", icon: Users },
     { href: "/favoritos", label: "Favoritos", icon: Heart },
     { href: "/sobre-balulu", label: "Sobre BALULU", icon: Info },
   ];

@@ -504,7 +504,7 @@ export default function PetProfileClient({
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {pet.contact_whatsapp && (
-                    
+                    <a
                       href={`https://wa.me/${pet.contact_whatsapp.replace(/\D/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -515,7 +515,7 @@ export default function PetProfileClient({
                     </a>
                   )}
                   {pet.contact_phone && (
-                    
+                    <a
                       href={`tel:${pet.contact_phone}`}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-balulu-primary-50 text-balulu-primary-700 text-sm font-semibold rounded-full hover:bg-balulu-primary-100 transition-colors"
                     >
@@ -523,7 +523,7 @@ export default function PetProfileClient({
                     </a>
                   )}
                   {pet.contact_instagram && (
-                    
+                    <a
                       href={`https://instagram.com/${pet.contact_instagram.replace("@", "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
