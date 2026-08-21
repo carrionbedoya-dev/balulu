@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
     const { data: interest, error } = await supabase
       .from("adoption_interests")
-      .select("status, user_id, pets(name)")
+      .select("status, user_id, pets(name, created_by)")
       .eq("id", interestId)
       .single();
 
@@ -43,34 +43,60 @@ export async function POST(request: Request) {
       return NextResponse.json({ skipped: true });
     }
 
+    const pet = interest.pets as { name: string; created_by: string | null } | null;
+    const petName = pet?.name || "la mascota";
+
     const { data: userData } = await supabase.auth.admin.getUserById(
       interest.user_id
     );
     const email = userData?.user?.email;
-    if (!email) {
-      return NextResponse.json({ error: "Usuario sin correo" }, { status: 404 });
+
+    if (email) {
+      await resend.emails.send({
+        from: "BALULU <onboarding@resend.dev>",
+        to: email,
+        subject: `${template.subject} - ${petName}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+            <h2 style="color: #1d4ed8;">${template.subject}</h2>
+            <p>Hola,</p>
+            <p>${template.body}</p>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">
+              Mascota: <strong>${petName}</strong>
+            </p>
+            <a href="https://balulu.app/perfil" style="display:inline-block; margin-top: 16px; background: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
+              Ver mi BALULU
+            </a>
+          </div>
+        `,
+      });
     }
 
-    const petName = (interest.pets as { name: string } | null)?.name || "la mascota";
+    // Si la adopcion se confirmo, avisamos tambien a quien publico la mascota
+    if (interest.status === "adoptado" && pet?.created_by) {
+      const { data: ownerData } = await supabase.auth.admin.getUserById(
+        pet.created_by
+      );
+      const ownerEmail = ownerData?.user?.email;
 
-    await resend.emails.send({
-      from: "BALULU <onboarding@resend.dev>",
-      to: email,
-      subject: `${template.subject} - ${petName}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
-          <h2 style="color: #1d4ed8;">${template.subject}</h2>
-          <p>Hola,</p>
-          <p>${template.body}</p>
-          <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">
-            Mascota: <strong>${petName}</strong>
-          </p>
-          <a href="https://balulu.app/perfil" style="display:inline-block; margin-top: 16px; background: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
-            Ver mi BALULU
-          </a>
-        </div>
-      `,
-    });
+      if (ownerEmail) {
+        await resend.emails.send({
+          from: "BALULU <onboarding@resend.dev>",
+          to: ownerEmail,
+          subject: `¡${petName} encontro un hogar!`,
+          html: `
+            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+              <h2 style="color: #1d4ed8;">¡Adopcion confirmada!</h2>
+              <p>Hola,</p>
+              <p>Se confirmo la adopcion de <strong>${petName}</strong>. Gracias por darle la oportunidad de un nuevo hogar.</p>
+              <a href="https://balulu.app/organizacion" style="display:inline-block; margin-top: 16px; background: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
+                Ver mi panel
+              </a>
+            </div>
+          `,
+        });
+      }
+    }
 
     return NextResponse.json({ sent: true });
   } catch (err) {

@@ -51,6 +51,14 @@ export default function RegisterPage() {
       return;
     }
 
+    fetch("/api/notify-welcome", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, name: fullName }),
+    }).catch(() => {
+      // Falla silenciosa: la cuenta ya se creo, el correo es un extra.
+    });
+
     showToast("¡Cuenta creada exitosamente!", "success");
     router.refresh();
     router.push("/explorar");
